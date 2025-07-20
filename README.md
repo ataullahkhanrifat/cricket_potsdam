@@ -94,17 +94,25 @@ python cricket_auction.py
 
 ```
 cricket_potsdam/
-├── auction_web.html          # Main web application
-├── cricket_auction.py        # Python GUI application
-├── standalone_auction.html   # Self-contained web version
-├── requirements.txt          # Python dependencies
-├── demo_auction.py          # Demo/testing script
-├── web_auction.py           # Alternative web server
-├── test_auction.py          # Unit tests
-├── templates/
-│   └── auction.html         # Web template
-├── PROJECT_SUMMARY.md       # Detailed project documentation
-└── README.md               # This file
+├── index.html                    # GitHub Pages landing page
+├── auction_web.html              # Main web application
+├── standalone_auction.html       # Self-contained web version
+├── cricket_auction.py            # Python GUI application
+├── requirements.txt              # Python dependencies
+├── README.md                     # This documentation
+├── PROJECT_SUMMARY.md            # Detailed project summary
+├── FILE_GUIDE.md                 # Project file organization guide
+├── demos/
+│   └── demo_auction.py           # Console-based demo
+├── scripts/
+│   ├── test_auction.py           # Testing script
+│   └── run_auction.bat           # Windows launcher
+├── archive/
+│   ├── web_auction.py            # Legacy Flask server
+│   ├── auction_demo_*.json       # Old save files
+│   └── test.html                 # Legacy test files
+└── templates/
+    └── auction.html              # Web template
 ```
 
 ## 🔧 Technical Details
