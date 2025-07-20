@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Potsdam - Fantasy Auction System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ffd700, #ffed4a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #4834d4, #686de0);
+        }
+        
+        .btn-info {
+            background: linear-gradient(45deg, #00d2d3, #54a0ff);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .features {
+            text-align: left;
+            margin-top: 30px;
+        }
+        
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .features li {
+            padding: 8px 0;
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .features li:before {
+            content: "🏏";
+            position: absolute;
+            left: 0;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 600px) {
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏏 Cricket Potsdam</h1>
+        <p class="subtitle">Fantasy Cricket Auction System</p>
+        
+        <div class="buttons">
+            <a href="auction_web.html" class="btn btn-primary">
+                🚀 Start Web Auction
+            </a>
+            <a href="standalone_auction.html" class="btn btn-secondary">
+                📱 Standalone Version
+            </a>
+            <a href="https://github.com/ataullahkhanrifat/cricket_potsdam" class="btn btn-info" target="_blank">
+                📁 View Source Code
+            </a>
+        </div>
+        
+        <div class="features">
+            <h3>✨ Key Features</h3>
+            <ul>
+                <li><strong>€10 Bid Increments</strong> - Small, manageable bid steps</li>
+                <li><strong>No Timer</strong> - Relaxed bidding environment</li>
+                <li><strong>Base Price Purchase</strong> - Instant player acquisition</li>
+                <li><strong>Unsold Re-auction</strong> - Second chances for failed auctions</li>
+                <li><strong>Manager Pricing</strong> - Special rates for team captains</li>
+                <li><strong>Live Export</strong> - Real-time team summaries</li>
+                <li><strong>Mobile Friendly</strong> - Works on any device</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p>🏆 Professional auction management with custom rules</p>
+            <p>Developed for Cricket Potsdam Fantasy League</p>
+        </div>
+    </div>
+</body>
+</html>
