@@ -27,7 +27,7 @@ python cricket_auction.py
 - **Dynamic Team Limits**: Configurable max players, Tigers, and Lions per team
 - **Custom Player Addition**: Add new players during auction
 - **Player Removal**: Remove players and restore budgets
-- **€1300 Starting Budget** per team
+- **€2000 Starting Budget** per team
 
 ### 🧍‍♂️ Teams & Managers
 1. **Imtiaz** → "Patronus Voyagers"

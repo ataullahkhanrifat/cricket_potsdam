@@ -25,7 +25,7 @@ class Player:
 class Manager:
     """Represents a team manager"""
     
-    def __init__(self, name: str, team_name: str, budget: int = 1300):
+    def __init__(self, name: str, team_name: str, budget: int = 2000):
         self.name = name
         self.team_name = team_name
         self.budget = budget

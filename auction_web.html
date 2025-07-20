@@ -455,7 +455,7 @@
                 <div class="manager-name-display">Manager: Imtiaz</div>
             </div>
             <div class="team-stats">
-                <div class="budget" id="budget-imtiaz">€1300 left</div>
+                <div class="budget" id="budget-imtiaz">€2000 left</div>
                 <div class="category-count" id="stats-imtiaz">Tigers: 0/4 | Lions: 0/3</div>
             </div>
             <div class="players-list" id="players-imtiaz">
@@ -469,7 +469,7 @@
                 <div class="manager-name-display">Manager: Ifthekhar</div>
             </div>
             <div class="team-stats">
-                <div class="budget" id="budget-ifthekhar">€1300 left</div>
+                <div class="budget" id="budget-ifthekhar">€2000 left</div>
                 <div class="category-count" id="stats-ifthekhar">Tigers: 0/4 | Lions: 0/3</div>
             </div>
             <div class="players-list" id="players-ifthekhar">
@@ -483,7 +483,7 @@
                 <div class="manager-name-display">Manager: Mahfuz</div>
             </div>
             <div class="team-stats">
-                <div class="budget" id="budget-mahfuz">€1300 left</div>
+                <div class="budget" id="budget-mahfuz">€2000 left</div>
                 <div class="category-count" id="stats-mahfuz">Tigers: 0/4 | Lions: 0/3</div>
             </div>
             <div class="players-list" id="players-mahfuz">
@@ -585,7 +585,7 @@
                 "Imtiaz": {
                     name: "Imtiaz",
                     teamName: "Patronus Voyagers",
-                    budget: 1200,  // 1300 - 100 for manager cost
+                    budget: 1900,  // 2000 - 100 for manager cost
                     players: [{ name: "Imtiaz", category: "MANAGER", soldPrice: 100 }],
                     tigerCount: 0,
                     lionCount: 0
@@ -593,7 +593,7 @@
                 "Ifthekhar": {
                     name: "Ifthekhar",
                     teamName: "Alpha Knight",
-                    budget: 1220,  // 1300 - 80 for manager cost
+                    budget: 1920,  // 2000 - 80 for manager cost
                     players: [{ name: "Ifthekhar", category: "MANAGER", soldPrice: 80 }],
                     tigerCount: 0,
                     lionCount: 0
@@ -601,7 +601,7 @@
                 "Mahfuz": {
                     name: "Mahfuz",
                     teamName: "X-Mafias Return",
-                    budget: 1300,
+                    budget: 2000,
                     players: [],
                     tigerCount: 0,
                     lionCount: 0
@@ -889,9 +889,9 @@
                         highestBidder: null,
                         biddingActive: false,
                         managers: {
-                            "Imtiaz": { name: "Imtiaz", teamName: "Patronus Voyagers", budget: 1200, players: [{ name: "Imtiaz", category: "MANAGER", soldPrice: 100 }], tigerCount: 0, lionCount: 0 },
-                            "Ifthekhar": { name: "Ifthekhar", teamName: "Alpha Knight", budget: 1220, players: [{ name: "Ifthekhar", category: "MANAGER", soldPrice: 80 }], tigerCount: 0, lionCount: 0 },
-                            "Mahfuz": { name: "Mahfuz", teamName: "X-Mafias Return", budget: 1300, players: [], tigerCount: 0, lionCount: 0 }
+                            "Imtiaz": { name: "Imtiaz", teamName: "Patronus Voyagers", budget: 1900, players: [{ name: "Imtiaz", category: "MANAGER", soldPrice: 100 }], tigerCount: 0, lionCount: 0 },
+                            "Ifthekhar": { name: "Ifthekhar", teamName: "Alpha Knight", budget: 1920, players: [{ name: "Ifthekhar", category: "MANAGER", soldPrice: 80 }], tigerCount: 0, lionCount: 0 },
+                            "Mahfuz": { name: "Mahfuz", teamName: "X-Mafias Return", budget: 2000, players: [], tigerCount: 0, lionCount: 0 }
                         },
                         unsoldPlayers: []
                     };
@@ -944,7 +944,7 @@ Remaining Tigers: ${auction.tigerPool.length}
 Remaining Lions: ${auction.lionPool.length}
 Unsold Players: ${auction.unsoldPlayers.length}
 
-Total Budget Used: €${Object.values(auction.managers).reduce((sum, m) => sum + (1300 - m.budget), 0)}
+Total Budget Used: €${Object.values(auction.managers).reduce((sum, m) => sum + (2000 - m.budget), 0)}
 `;
 
                 // Create and download as text file (PDF generation requires additional libraries)
