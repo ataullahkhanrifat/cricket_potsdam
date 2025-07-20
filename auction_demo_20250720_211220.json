@@ -1,0 +1,130 @@
+{
+  "auction_date": "2025-07-20T21:12:20.199889",
+  "teams": [
+    {
+      "team_name": "Patronus Voyagers",
+      "manager": "Imtiaz",
+      "budget_left": 340,
+      "tigers": 2,
+      "lions": 2,
+      "players": [
+        {
+          "name": "Shanto Berlin",
+          "category": "TIGER",
+          "price": 200
+        },
+        {
+          "name": "Tanzim",
+          "category": "TIGER",
+          "price": 400
+        },
+        {
+          "name": "Raisul",
+          "category": "LION",
+          "price": 230
+        },
+        {
+          "name": "Amamul",
+          "category": "LION",
+          "price": 130
+        }
+      ]
+    },
+    {
+      "team_name": "Alpha Knight",
+      "manager": "Ifthekhar",
+      "budget_left": 1020,
+      "tigers": 0,
+      "lions": 1,
+      "players": [
+        {
+          "name": "Ankon",
+          "category": "LION",
+          "price": 280
+        }
+      ]
+    },
+    {
+      "team_name": "X-Mafias Return",
+      "manager": "Mahfuz",
+      "budget_left": 420,
+      "tigers": 2,
+      "lions": 1,
+      "players": [
+        {
+          "name": "Sufiyan",
+          "category": "TIGER",
+          "price": 350
+        },
+        {
+          "name": "Akash",
+          "category": "LION",
+          "price": 130
+        },
+        {
+          "name": "Pranto",
+          "category": "TIGER",
+          "price": 400
+        }
+      ]
+    }
+  ],
+  "sold_players": [
+    {
+      "name": "Sufiyan",
+      "category": "TIGER",
+      "base_price": 100,
+      "sold_price": 350,
+      "sold_to": "Mahfuz"
+    },
+    {
+      "name": "Akash",
+      "category": "LION",
+      "base_price": 80,
+      "sold_price": 130,
+      "sold_to": "Mahfuz"
+    },
+    {
+      "name": "Shanto Berlin",
+      "category": "TIGER",
+      "base_price": 100,
+      "sold_price": 200,
+      "sold_to": "Imtiaz"
+    },
+    {
+      "name": "Ankon",
+      "category": "LION",
+      "base_price": 80,
+      "sold_price": 280,
+      "sold_to": "Ifthekhar"
+    },
+    {
+      "name": "Tanzim",
+      "category": "TIGER",
+      "base_price": 150,
+      "sold_price": 400,
+      "sold_to": "Imtiaz"
+    },
+    {
+      "name": "Raisul",
+      "category": "LION",
+      "base_price": 80,
+      "sold_price": 230,
+      "sold_to": "Imtiaz"
+    },
+    {
+      "name": "Pranto",
+      "category": "TIGER",
+      "base_price": 150,
+      "sold_price": 400,
+      "sold_to": "Mahfuz"
+    },
+    {
+      "name": "Amamul",
+      "category": "LION",
+      "base_price": 80,
+      "sold_price": 130,
+      "sold_to": "Imtiaz"
+    }
+  ]
+}
