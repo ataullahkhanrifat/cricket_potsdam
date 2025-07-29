@@ -4,256 +4,372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cricket Potsdam - Live Auction</title>
+    <title>Sports Auction - Live Bidding System</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-bg: linear-gradient(135deg, #0f0f23 0%, #1a1a3a 50%, #2d1b69 100%);
+            --secondary-bg: rgba(255, 255, 255, 0.05);
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --hover-bg: rgba(255, 255, 255, 0.12);
+            --border-color: rgba(255, 255, 255, 0.15);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a9c0;
+            --accent-gold: #ffd700;
+            --accent-orange: #ff8c42;
+            --accent-blue: #4f46e5;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.25);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.35);
+            --border-radius: 12px;
+            --border-radius-lg: 16px;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #000;
-            color:
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            padding: 0;
+            min-height: 100vh;
+            line-height: 1.6;
+            font-weight: 400;
         }
 
-        ,
-        unsoldPlayers: [] // Track unsold players for re-auction
-        }
-
-        ;
-        ;
-        padding: 20px;
-        min-height: 100vh;
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            padding: 40px 20px;
         }
 
         .title {
-            font-size: 3em;
-            color: #FFD700;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-            text-align: center;
-            width: 100%;
-            display: block;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            text-shadow: none;
+            letter-spacing: -0.02em;
         }
 
         .subtitle {
-            font-size: 1.2em;
-            color: #FFA500;
-            text-align: center;
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            opacity: 0.9;
         }
 
+        /* Auction Area - Live Phase */
         .auction-area {
-            background-color: #222;
-            border: 3px solid #444;
-            padding: 30px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            padding: 40px;
             margin-bottom: 30px;
-            border-radius: 15px;
+            border-radius: var(--border-radius-lg);
             text-align: center;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auction-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-gold), var(--accent-orange), var(--accent-gold));
         }
 
         .current-player {
-            font-size: 2.5em;
-            margin-bottom: 15px;
-            font-weight: bold;
-            color: #fff;
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
         }
 
         .player-details {
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            color: #FFA500;
+            font-size: 1.25rem;
+            margin-bottom: 25px;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
         .current-bid {
-            font-size: 2em;
-            color: #00FF00;
-            margin-bottom: 30px;
-            font-weight: bold;
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            color: var(--accent-green);
+            margin-bottom: 35px;
+            font-weight: 700;
+            padding: 12px 24px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: var(--border-radius);
+            display: inline-block;
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .bid-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
             margin-bottom: 30px;
-            flex-wrap: wrap;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .manager-bid {
             text-align: center;
-            background-color: #333;
-            padding: 20px;
-            border-radius: 10px;
-            border: 2px solid #555;
-            min-width: 200px;
-        }
-
-        .manager-name {
-            color: #90EE90;
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-        }
-
-        .team-name-small {
-            font-size: 0.9em;
-            color: #FFA500;
-            margin-bottom: 15px;
-        }
-
-        .bid-btn {
-            background-color: #000080;
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            margin: 5px;
-            min-width: 140px;
-            transition: all 0.3s;
-        }
-
-        .bid-btn:hover:not(:disabled) {
-            background-color: #0000CD;
-            transform: scale(1.05);
-        }
-
-        .bid-btn:disabled {
-            background-color: #666;
-            cursor: not-allowed;
-            color: #999;
-        }
-
-        .pass-btn {
-            background-color: #8B0000;
-            font-size: 14px;
-            padding: 10px 20px;
-        }
-
-        .pass-btn:hover:not(:disabled) {
-            background-color: #DC143C;
-        }
-
-        .control-buttons {
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        .control-btn {
-            background-color: #228B22;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            margin: 0 10px 10px 10px;
-            transition: all 0.3s;
-        }
-
-        .control-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .sold-btn {
-            background-color: #FF8C00;
-        }
-
-        .unsold-btn {
-            background-color: #DC143C;
-        }
-
-        .reset-btn {
-            background-color: #8B0000;
-        }
-
-        .export-btn {
-            background-color: #800080;
-        }
-
-        .teams-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
-        }
-
-        .team {
-            background-color: #333;
-            border: 3px solid #666;
-            border-radius: 15px;
+            background: var(--secondary-bg);
+            backdrop-filter: blur(10px);
+            padding: 24px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
             overflow: hidden;
         }
 
-        .team-header {
-            background-color: #000080;
-            padding: 20px;
+        .manager-bid:hover {
+            background: var(--hover-bg);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .manager-name {
+            color: var(--accent-gold);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .team-name-small {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            opacity: 0.8;
+        }
+
+        .bid-btn {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #6366f1 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            margin: 4px;
+            min-width: 140px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+        }
+
+        .bid-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+            background: linear-gradient(135deg, #6366f1 0%, var(--accent-blue) 100%);
+        }
+
+        .bid-btn:disabled {
+            background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+            cursor: not-allowed;
+            color: var(--text-secondary);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .pass-btn {
+            background: linear-gradient(135deg, var(--accent-red) 0%, #dc2626 100%);
+            font-size: 12px;
+            padding: 8px 16px;
+        }
+
+        .pass-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #dc2626 0%, var(--accent-red) 100%);
+        }
+
+        /* Control Buttons */
+        .control-buttons {
             text-align: center;
+            margin: 40px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, var(--accent-green) 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            min-width: 140px;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .sold-btn {
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #ea580c 100%);
+        }
+
+        .base-price-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+
+        .unsold-btn {
+            background: linear-gradient(135deg, var(--accent-red) 0%, #dc2626 100%);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+
+        /* Team Display */
+        .teams-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+        }
+
+        .team {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .team:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .team-header {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #6366f1 100%);
+            padding: 24px;
+            text-align: center;
+            position: relative;
         }
 
         .team-name {
-            font-size: 1.4em;
-            font-weight: bold;
+            font-size: 1.5rem;
+            font-weight: 700;
             margin-bottom: 8px;
-            color: #fff;
+            color: white;
+            letter-spacing: -0.01em;
         }
 
         .manager-name-display {
-            color: #90EE90;
-            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            font-weight: 500;
         }
 
         .team-stats {
             padding: 20px;
             text-align: center;
-            background-color: #444;
+            background: var(--secondary-bg);
         }
 
         .budget {
-            color: #FFD700;
-            font-weight: bold;
+            color: var(--accent-gold);
+            font-weight: 700;
             margin-bottom: 12px;
-            font-size: 1.2em;
+            font-size: 1.25rem;
         }
 
         .category-count {
-            color: #FFF;
-            font-size: 1em;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
         .players-list {
             padding: 20px;
-            min-height: 450px;
-            max-height: 500px;
+            min-height: 300px;
+            max-height: 400px;
             overflow-y: auto;
         }
 
+        .players-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .players-list::-webkit-scrollbar-track {
+            background: var(--secondary-bg);
+            border-radius: 3px;
+        }
+
+        .players-list::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
         .player-item {
-            background-color: #555;
+            background: var(--secondary-bg);
             margin: 8px 0;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.95em;
-            border-left: 4px solid #FFD700;
+            padding: 14px;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            border-left: 3px solid var(--accent-gold);
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-item:hover {
+            background: var(--hover-bg);
+            transform: translateX(2px);
         }
 
         .status-bar {
             text-align: center;
-            padding: 15px;
-            background-color: #333;
-            margin-bottom: 25px;
-            border-radius: 8px;
-            font-size: 1.1em;
+            padding: 20px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
         }
 
         .timer {
@@ -345,34 +461,30 @@
         }
 
         /* Config Section Styles */
-        /* Team Configuration Section */
         .config-section {
             background-color: #2a2a2a;
             border: 2px solid #555;
             padding: 20px;
             margin: 20px 0;
             border-radius: 10px;
-            text-align: center;
         }
 
         .config-section h3 {
             color: #00FFFF;
             margin-bottom: 20px;
+            text-align: center;
         }
 
         .config-form {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
             margin-top: 15px;
-            flex-wrap: wrap;
         }
 
         .config-item {
             display: flex;
             flex-direction: column;
-            align-items: center;
             gap: 5px;
         }
 
@@ -382,534 +494,831 @@
             font-size: 0.9em;
         }
 
-        .config-item input {
+        .config-item input,
+        .config-item select {
             padding: 8px 12px;
             border: 1px solid #666;
             border-radius: 5px;
             background-color: #444;
             color: white;
             font-size: 14px;
-            width: 80px;
+        }
+
+        .setup-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            margin: 24px 0;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .setup-section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .setup-section h3 {
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 24px;
             text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .players-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 24px;
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .players-table th,
+        .players-table td {
+            border: 1px solid var(--border-color);
+            padding: 16px 12px;
+            text-align: left;
+        }
+
+        .players-table th {
+            background: var(--card-bg);
+            color: var(--accent-gold);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .players-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .players-table tr:hover {
+            background: var(--hover-bg);
+        }
+
+        .start-auction-section {
+            text-align: center;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #6366f1 100%);
+            padding: 40px;
+            border-radius: var(--border-radius-lg);
+            margin: 40px 0;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .start-auction-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .start-auction-section h3 {
+            color: white;
+            margin-bottom: 16px;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .start-auction-section p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 24px;
+            font-size: 1rem;
+        }
+
+        .start-auction-btn {
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-orange) 100%);
+            color: #1a1a3a;
+            border: none;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .start-auction-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .remove-player-btn {
+            background: linear-gradient(135deg, var(--accent-red) 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .remove-player-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+
+            .bid-buttons {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .teams-container {
+                grid-template-columns: 1fr;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .control-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .control-btn {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .config-form {
+                grid-template-columns: 1fr;
+            }
+
+            .auction-area {
+                padding: 24px;
+            }
+
+            .setup-section {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 20px 12px;
+            }
+
+            .auction-area {
+                padding: 20px;
+            }
+
+            .players-table th,
+            .players-table td {
+                padding: 8px;
+                font-size: 0.85rem;
+            }
+        }
+
+        .start-auction-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.3);
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <h1 class="title">🏏 CRICKET POTSDAM 🏏</h1>
-        <p class="subtitle">Live Player Auction System</p>
-    </div>
-
-    <div class="status-bar">
-        <span id="remaining-players">Loading auction data...</span>
-    </div>
-
-    <div class="auction-area">
-        <div id="current-player" class="current-player">
-            Click "Next Player" to start auction
-        </div>
-        <div id="player-details" class="player-details"></div>
-        <div id="current-bid" class="current-bid"></div>
-        <!-- Timer removed as requested -->
-
-        <div id="bid-section" class="bid-buttons hidden">
-            <div class="manager-bid">
-                <div class="manager-name">Imtiaz</div>
-                <div class="team-name-small">Patronus Voyagers</div>
-                <button class="bid-btn" onclick="placeBid('Imtiaz')" id="bid-imtiaz">Bid €50</button>
-                <br>
-                <button class="bid-btn pass-btn" onclick="passBid('Imtiaz')" id="pass-imtiaz">Pass</button>
-            </div>
-            <div class="manager-bid">
-                <div class="manager-name">Ifthekhar</div>
-                <div class="team-name-small">Alpha Knight</div>
-                <button class="bid-btn" onclick="placeBid('Ifthekhar')" id="bid-ifthekhar">Bid €50</button>
-                <br>
-                <button class="bid-btn pass-btn" onclick="passBid('Ifthekhar')" id="pass-ifthekhar">Pass</button>
-            </div>
-            <div class="manager-bid">
-                <div class="manager-name">Mahfuz</div>
-                <div class="team-name-small">X-Mafias Return</div>
-                <button class="bid-btn" onclick="placeBid('Mahfuz')" id="bid-mahfuz">Bid €50</button>
-                <br>
-                <button class="bid-btn pass-btn" onclick="passBid('Mahfuz')" id="pass-mahfuz">Pass</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="control-buttons">
-        <button class="control-btn" onclick="nextPlayer()">Next Player</button>
-        <button class="control-btn sold-btn" onclick="sellPlayer()" id="sell-btn" disabled>SOLD!</button>
-        <button class="control-btn base-price-btn" onclick="buyAtBasePrice()" id="base-price-btn" disabled>Buy at Base
-            Price</button>
-        <button class="control-btn unsold-btn" onclick="markUnsold()" id="unsold-btn" disabled>UNSOLD</button>
-        <button class="control-btn export-btn" onclick="exportTeams()">Export Teams</button>
-        <button class="control-btn reset-btn" onclick="resetAuction()">Reset Auction</button>
-    </div>
-
-    <div class="teams-container">
-        <div class="team">
-            <div class="team-header">
-                <div class="team-name">Patronus Voyagers</div>
-                <div class="manager-name-display">Manager: Imtiaz</div>
-            </div>
-            <div class="team-stats">
-                <div class="budget" id="budget-imtiaz">€2000 left</div>
-                <div class="category-count" id="stats-imtiaz">Tigers: 0/4 | Lions: 0/3</div>
-            </div>
-            <div class="players-list" id="players-imtiaz">
-                <em style="color: #999;">No players yet</em>
-            </div>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🏆 SPORTS AUCTION 🏆</h1>
+            <p class="subtitle">Universal Live Bidding System</p>
         </div>
 
-        <div class="team">
-            <div class="team-header">
-                <div class="team-name">Alpha Knight</div>
-                <div class="manager-name-display">Manager: Ifthekhar</div>
+        <!-- Setup Phase -->
+        <div id="setup-phase">
+            <!-- Basic Configuration -->
+            <div class="setup-section">
+                <h3>⚙️ Auction Configuration</h3>
+                <div class="config-form">
+                    <div class="config-item">
+                        <label for="auction-title">Auction Title:</label>
+                        <input type="text" id="auction-title" placeholder="e.g., Cricket Championship 2025" />
+                    </div>
+                    <div class="config-item">
+                        <label for="total-budget">Budget per Team (€):</label>
+                        <input type="number" id="total-budget" value="2000" min="500" max="10000" />
+                    </div>
+                    <div class="config-item">
+                        <label for="bid-increment">Bid Increment (€):</label>
+                        <input type="number" id="bid-increment" value="10" min="5" max="100" />
+                    </div>
+                </div>
             </div>
-            <div class="team-stats">
-                <div class="budget" id="budget-ifthekhar">€2000 left</div>
-                <div class="category-count" id="stats-ifthekhar">Tigers: 0/4 | Lions: 0/3</div>
+
+            <!-- Team Configuration -->
+            <div class="setup-section">
+                <h3>👥 Team Setup</h3>
+                <div class="config-form">
+                    <div class="config-item">
+                        <label for="num-teams">Number of Teams:</label>
+                        <input type="number" id="num-teams" value="3" min="2" max="8" />
+                    </div>
+                    <div class="config-item">
+                        <label for="max-players">Max Players per Team:</label>
+                        <input type="number" id="max-players" value="7" min="5" max="15" />
+                    </div>
+                </div>
+                <div id="teams-setup" style="margin-top: 20px;">
+                    <!-- Teams will be generated here -->
+                </div>
+                <button class="control-btn" onclick="generateTeams()" style="margin-top: 15px;">Generate Teams</button>
             </div>
-            <div class="players-list" id="players-ifthekhar">
-                <em style="color: #999;">No players yet</em>
+
+            <!-- Category Configuration -->
+            <div class="setup-section">
+                <h3>📋 Player Categories</h3>
+                <div class="config-form">
+                    <div class="config-item">
+                        <label for="num-categories">Number of Categories:</label>
+                        <input type="number" id="num-categories" value="2" min="1" max="5" />
+                    </div>
+                </div>
+                <div id="categories-setup" style="margin-top: 20px;">
+                    <!-- Categories will be generated here -->
+                </div>
+                <button class="control-btn" onclick="generateCategories()" style="margin-top: 15px;">Generate
+                    Categories</button>
+            </div>
+
+            <!-- Player Management -->
+            <div class="setup-section">
+                <h3>🏃‍♂️ Player Management</h3>
+                <div class="config-form">
+                    <div class="config-item">
+                        <label for="player-name">Player Name:</label>
+                        <input type="text" id="player-name" placeholder="Enter player name" />
+                    </div>
+                    <div class="config-item">
+                        <label for="player-price">Base Price (€):</label>
+                        <input type="number" id="player-price" placeholder="50" min="10" max="1000" />
+                    </div>
+                    <div class="config-item">
+                        <label for="player-category">Category:</label>
+                        <select id="player-category">
+                            <option value="">Select category</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: 20px 0;">
+                    <button class="control-btn" onclick="addPlayer()">Add Player</button>
+                </div>
+
+                <table class="players-table" id="players-table">
+                    <thead>
+                        <tr>
+                            <th>Player Name</th>
+                            <th>Category</th>
+                            <th>Base Price (€)</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="players-table-body">
+                        <!-- Players will be added here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Start Auction -->
+            <div class="start-auction-section">
+                <h3>🚀 Ready to Start?</h3>
+                <p>Make sure you've configured teams, categories, and added players before starting the auction.</p>
+                <button class="start-auction-btn" onclick="startAuction()">START AUCTION</button>
             </div>
         </div>
 
-        <div class="team">
-            <div class="team-header">
-                <div class="team-name">X-Mafias Return</div>
-                <div class="manager-name-display">Manager: Mahfuz</div>
-            </div>
-            <div class="team-stats">
-                <div class="budget" id="budget-mahfuz">€2000 left</div>
-                <div class="category-count" id="stats-mahfuz">Tigers: 0/4 | Lions: 0/3</div>
-            </div>
-            <div class="players-list" id="players-mahfuz">
-                <em style="color: #999;">No players yet</em>
-            </div>
+        <!-- Auction Phase (Hidden initially) -->
+        <div id="auction-phase" class="hidden">
+
         </div>
-    </div>
 
-    <!-- Add Custom Player Section -->
-    <div class="add-player-section">
-        <h3>Add Custom Player</h3>
-        <div class="add-player-form">
-            <input type="text" id="custom-player-name" placeholder="Player Name" />
-            <input type="number" id="custom-player-price" placeholder="Base Price (€)" min="50" max="300" />
-            <select id="custom-player-category">
-                <option value="TIGER">TIGER</option>
-                <option value="LION">LION</option>
-            </select>
-            <button class="control-btn" onclick="addCustomPlayer()">Add Player</button>
-        </div>
-    </div>
+    </div> <!-- container -->
+</body>
 
-    <!-- Team Rules Configuration -->
-    <div class="config-section">
-        <h3>Team Configuration Rules</h3>
-        <div class="config-form">
-            <div class="config-item">
-                <label for="max-players">Max Players per Team:</label>
-                <input type="number" id="max-players" value="7" min="6" max="12" />
-            </div>
-            <div class="config-item">
-                <label for="max-tigers">Max Tigers per Team:</label>
-                <input type="number" id="max-tigers" value="4" min="2" max="8" />
-            </div>
-            <div class="config-item">
-                <label for="max-lions">Max Lions per Team:</label>
-                <input type="number" id="max-lions" value="3" min="2" max="8" />
-            </div>
-            <button class="control-btn" onclick="updateTeamRules()">Update Rules</button>
-        </div>
-    </div>
+</html>
 
-    <script>
-        console.log('Starting Cricket Potsdam Auction...');
+<script>
+    console.log('Starting Universal Sports Auction...');
 
-        // Player data
-        const tigerPlayers = [
-            { name: "Shanto", basePrice: 150, category: "TIGER" },
-            { name: "Tanzim", basePrice: 150, category: "TIGER" },
-            { name: "Pranto", basePrice: 150, category: "TIGER" },
-            { name: "Oni", basePrice: 120, category: "TIGER" },
-            { name: "Rifat", basePrice: 120, category: "TIGER" },
-            { name: "Naim", basePrice: 120, category: "TIGER" },
-            { name: "Nahid", basePrice: 120, category: "TIGER" },
-            { name: "Sony", basePrice: 100, category: "TIGER" },
-            { name: "Sufiyan", basePrice: 100, category: "TIGER" },
-            { name: "Samit", basePrice: 100, category: "TIGER" },
-            { name: "Shanto Berlin", basePrice: 100, category: "TIGER" }
-        ];
+    // Global configuration
+    let auctionConfig = {
+        title: '',
+        totalBudget: 2000,
+        bidIncrement: 10,
+        maxPlayers: 7,
+        teams: [],
+        categories: [],
+        players: []
+    };
 
-        const lionPlayers = [
-            { name: "Akash", basePrice: 80, category: "LION" },
-            { name: "Amamul", basePrice: 80, category: "LION" },
-            { name: "Tanveer", basePrice: 80, category: "LION" },
-            { name: "Raisul", basePrice: 80, category: "LION" },
-            { name: "Ankon", basePrice: 80, category: "LION" },
-            { name: "Shahriar", basePrice: 80, category: "LION" },
-            { name: "Dip", basePrice: 80, category: "LION" },
-            { name: "Ejaz", basePrice: 80, category: "LION" }
-        ];
+    // Global auction state
+    let auction = {
+        isSetupComplete: false,
+        playerPool: [],
+        currentPlayer: null,
+        currentBid: 0,
+        highestBidder: null,
+        biddingActive: false,
+        managers: {},
+        unsoldPlayers: []
+    };
 
-        // Utility functions
-        function shuffle(array) {
-            const newArray = [...array];
-            for (let i = newArray.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    // Setup Phase Functions
+    function generateTeams() {
+        const numTeams = parseInt(document.getElementById('num-teams').value);
+        const teamsSetup = document.getElementById('teams-setup');
+
+        auctionConfig.teams = [];
+
+        let html = '<div class="config-form">';
+        for (let i = 1; i <= numTeams; i++) {
+            html += `
+                    <div class="config-item">
+                        <label for="team-${i}-name">Team ${i} Name:</label>
+                        <input type="text" id="team-${i}-name" placeholder="e.g., Team Alpha" />
+                    </div>
+                    <div class="config-item">
+                        <label for="team-${i}-manager">Manager ${i} Name:</label>
+                        <input type="text" id="team-${i}-manager" placeholder="e.g., John Smith" />
+                    </div>
+                `;
+        }
+        html += '</div>';
+
+        teamsSetup.innerHTML = html;
+    }
+
+    function generateCategories() {
+        const numCategories = parseInt(document.getElementById('num-categories').value);
+        const categoriesSetup = document.getElementById('categories-setup');
+
+        auctionConfig.categories = [];
+
+        let html = '<div class="config-form">';
+        for (let i = 1; i <= numCategories; i++) {
+            html += `
+                    <div class="config-item">
+                        <label for="category-${i}-name">Category ${i} Name:</label>
+                        <input type="text" id="category-${i}-name" placeholder="e.g., Premium, Standard" onchange="updatePlayerCategoryDropdown()" onkeyup="updatePlayerCategoryDropdown()" />
+                    </div>
+                    <div class="config-item">
+                        <label for="category-${i}-max">Max per Team:</label>
+                        <input type="number" id="category-${i}-max" value="3" min="1" max="10" />
+                    </div>
+                `;
+        }
+        html += '</div>';
+
+        categoriesSetup.innerHTML = html;
+
+        // Update player category dropdown immediately
+        updatePlayerCategoryDropdown();
+    }
+
+    function updatePlayerCategoryDropdown() {
+        const numCategories = parseInt(document.getElementById('num-categories').value);
+        const categorySelect = document.getElementById('player-category');
+
+        categorySelect.innerHTML = '<option value="">Select category</option>';
+
+        for (let i = 1; i <= numCategories; i++) {
+            const categoryInput = document.getElementById(`category-${i}-name`);
+            const categoryName = categoryInput?.value.trim() || `Category ${i}`;
+            categorySelect.innerHTML += `<option value="${categoryName}">${categoryName}</option>`;
+        }
+    }
+
+    function addPlayer() {
+        const name = document.getElementById('player-name').value.trim();
+        const price = parseInt(document.getElementById('player-price').value);
+        const category = document.getElementById('player-category').value;
+
+        if (!name) {
+            alert('Please enter a player name.');
+            return;
+        }
+
+        if (!price || price < 10) {
+            alert('Please enter a valid price (minimum €10).');
+            return;
+        }
+
+        if (!category) {
+            alert('Please select a category.');
+            return;
+        }
+
+        // Check if player already exists
+        if (auctionConfig.players.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+            alert('A player with this name already exists.');
+            return;
+        }
+
+        // Add player
+        const player = { name, price, category };
+        auctionConfig.players.push(player);
+
+        // Clear form
+        document.getElementById('player-name').value = '';
+        document.getElementById('player-price').value = '';
+        document.getElementById('player-category').value = '';
+
+        updatePlayersTable();
+    }
+
+    function removePlayer(index) {
+        if (confirm(`Remove ${auctionConfig.players[index].name} from the player list?`)) {
+            auctionConfig.players.splice(index, 1);
+            updatePlayersTable();
+        }
+    }
+
+    function updatePlayersTable() {
+        const tbody = document.getElementById('players-table-body');
+
+        if (auctionConfig.players.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">No players added yet</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = auctionConfig.players.map((player, index) => `
+                <tr>
+                    <td>${player.name}</td>
+                    <td>${player.category}</td>
+                    <td>€${player.price}</td>
+                    <td>
+                        <button onclick="removePlayer(${index})" class="remove-player-btn">Remove</button>
+                    </td>
+                </tr>
+            `).join('');
+    }
+
+    function startAuction() {
+        // Validate configuration
+        const title = document.getElementById('auction-title').value.trim();
+        const budget = parseInt(document.getElementById('total-budget').value);
+        const increment = parseInt(document.getElementById('bid-increment').value);
+        const maxPlayers = parseInt(document.getElementById('max-players').value);
+        const numTeams = parseInt(document.getElementById('num-teams').value);
+        const numCategories = parseInt(document.getElementById('num-categories').value);
+
+        if (!title) {
+            alert('Please enter an auction title.');
+            return;
+        }
+
+        // Collect teams
+        auctionConfig.teams = [];
+        for (let i = 1; i <= numTeams; i++) {
+            const teamName = document.getElementById(`team-${i}-name`).value.trim();
+            const managerName = document.getElementById(`team-${i}-manager`).value.trim();
+
+            if (!teamName || !managerName) {
+                alert(`Please fill in all team and manager names.`);
+                return;
             }
-            return newArray;
+
+            auctionConfig.teams.push({ teamName, managerName });
         }
 
-        // Global auction configuration
-        let auctionConfig = {
-            maxPlayers: 7,
-            maxTigers: 4,
-            maxLions: 3
-        };
+        // Collect categories
+        auctionConfig.categories = [];
+        for (let i = 1; i <= numCategories; i++) {
+            const categoryName = document.getElementById(`category-${i}-name`).value.trim();
+            const maxPerTeam = parseInt(document.getElementById(`category-${i}-max`).value);
 
-        // Global auction state
-        let auction = {
-            tigerPool: shuffle(tigerPlayers),
-            lionPool: shuffle(lionPlayers),
-            nextCategory: "TIGER",
-            currentPlayer: null,
-            currentBid: 0,
-            highestBidder: null,
-            biddingActive: false,
-            managers: {
-                "Imtiaz": {
-                    name: "Imtiaz",
-                    teamName: "Patronus Voyagers",
-                    budget: 1900,  // 2000 - 100 for manager cost
-                    players: [{ name: "Imtiaz", category: "MANAGER", soldPrice: 100 }],
-                    tigerCount: 0,
-                    lionCount: 0
-                },
-                "Ifthekhar": {
-                    name: "Ifthekhar",
-                    teamName: "Alpha Knight",
-                    budget: 1920,  // 2000 - 80 for manager cost
-                    players: [{ name: "Ifthekhar", category: "MANAGER", soldPrice: 80 }],
-                    tigerCount: 0,
-                    lionCount: 0
-                },
-                "Mahfuz": {
-                    name: "Mahfuz",
-                    teamName: "X-Mafias Return",
-                    budget: 2000,
-                    players: [],
-                    tigerCount: 0,
-                    lionCount: 0
-                }
-            },
-            unsoldPlayers: []  // Track unsold players for re-auction
-        };
-
-        // Main functions
-        function canManagerBid(manager, amount, category) {
-            if (amount > manager.budget) return false;
-            if (manager.players.length >= auctionConfig.maxPlayers) return false;  // Use configurable limit
-            if (category === "TIGER" && manager.tigerCount >= auctionConfig.maxTigers) return false;
-            if (category === "LION" && manager.lionCount >= auctionConfig.maxLions) return false;
-            return true;
-        }
-
-        function updateDisplay() {
-            try {
-                // Update status bar
-                const totalBudget = Object.values(auction.managers).reduce((sum, m) => sum + m.budget, 0);
-                document.getElementById('remaining-players').textContent =
-                    `Tigers: ${auction.tigerPool.length}, Lions: ${auction.lionPool.length} remaining | Total Budget: €${totalBudget}`;
-
-                // Update current player display
-                if (auction.currentPlayer) {
-                    document.getElementById('current-player').textContent = auction.currentPlayer.name;
-                    document.getElementById('player-details').innerHTML =
-                        `Category: <span class="${auction.currentPlayer.category.toLowerCase()}-category">${auction.currentPlayer.category}</span> | Base Price: €${auction.currentPlayer.basePrice}`;
-
-                    const bidderText = auction.highestBidder ? ` - ${auction.highestBidder}` : '';
-                    document.getElementById('current-bid').textContent =
-                        `Current Bid: €${auction.currentBid}${bidderText}`;
-
-                    document.getElementById('bid-section').classList.remove('hidden');
-                    document.getElementById('sell-btn').disabled = false;  // Always enabled when player is active
-                    document.getElementById('base-price-btn').disabled = false;  // Always enabled when player is active
-                    document.getElementById('unsold-btn').disabled = false;  // Always enabled when player is active
-
-                    updateBidButtons();
-                } else {
-                    document.getElementById('current-player').textContent = 'Click "Next Player" to start auction';
-                    document.getElementById('player-details').textContent = '';
-                    document.getElementById('current-bid').textContent = '';
-                    document.getElementById('bid-section').classList.add('hidden');
-                    document.getElementById('sell-btn').disabled = true;
-                    document.getElementById('base-price-btn').disabled = true;
-                    document.getElementById('unsold-btn').disabled = true;
-                }
-
-                updateTeams();
-            } catch (error) {
-                console.error('Error updating display:', error);
+            if (!categoryName) {
+                alert(`Please fill in all category names.`);
+                return;
             }
+
+            auctionConfig.categories.push({ name: categoryName, maxPerTeam });
         }
 
-        function updateBidButtons() {
-            if (!auction.currentPlayer) return;
+        if (auctionConfig.players.length === 0) {
+            alert('Please add at least one player before starting the auction.');
+            return;
+        }
 
-            const nextBid = auction.currentBid + 10;  // €10 increments
-            const managers = ['Imtiaz', 'Ifthekhar', 'Mahfuz'];
+        // Update configuration
+        auctionConfig.title = title;
+        auctionConfig.totalBudget = budget;
+        auctionConfig.bidIncrement = increment;
+        auctionConfig.maxPlayers = maxPlayers;
 
-            managers.forEach(managerName => {
-                try {
-                    const manager = auction.managers[managerName];
-                    const bidBtn = document.getElementById(`bid-${managerName.toLowerCase()}`);
-                    const passBtn = document.getElementById(`pass-${managerName.toLowerCase()}`);
+        // Initialize auction
+        initializeAuction();
 
-                    if (!bidBtn || !passBtn) return;
+        // Switch to auction phase
+        document.getElementById('setup-phase').classList.add('hidden');
+        document.getElementById('auction-phase').classList.remove('hidden');
+    }
 
-                    const canBid = canManagerBid(manager, nextBid, auction.currentPlayer.category);
+    function initializeAuction() {
+        // Initialize managers
+        auction.managers = {};
+        auctionConfig.teams.forEach(team => {
+            auction.managers[team.managerName] = {
+                name: team.managerName,
+                teamName: team.teamName,
+                budget: auctionConfig.totalBudget,
+                players: [],
+                categoryCounts: {}
+            };
 
-                    bidBtn.disabled = !canBid || !auction.biddingActive;
-                    passBtn.disabled = !auction.biddingActive;
-
-                    bidBtn.textContent = canBid ? `Bid €${nextBid}` : 'Cannot Bid';
-
-                    // Highlight highest bidder
-                    if (auction.highestBidder === managerName) {
-                        bidBtn.style.backgroundColor = '#228B22';
-                    } else {
-                        bidBtn.style.backgroundColor = canBid ? '#000080' : '#666';
-                    }
-                } catch (error) {
-                    console.error(`Error updating bid buttons for ${managerName}:`, error);
-                }
+            // Initialize category counts
+            auctionConfig.categories.forEach(cat => {
+                auction.managers[team.managerName].categoryCounts[cat.name] = 0;
             });
+        });
+
+        // Initialize player pool with shuffling for complete randomness
+        auction.playerPool = [...auctionConfig.players];
+        // Shuffle the player pool using Fisher-Yates algorithm for better randomization
+        for (let i = auction.playerPool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [auction.playerPool[i], auction.playerPool[j]] = [auction.playerPool[j], auction.playerPool[i]];
         }
 
-        function updateTeams() {
-            Object.values(auction.managers).forEach(manager => {
-                try {
-                    const managerKey = manager.name.toLowerCase();
+        // Generate auction interface
+        generateAuctionInterface();
 
-                    // Update budget and stats
-                    const budgetEl = document.getElementById(`budget-${managerKey}`);
-                    const statsEl = document.getElementById(`stats-${managerKey}`);
-                    const playersEl = document.getElementById(`players-${managerKey}`);
+        auction.isSetupComplete = true;
+    }
 
-                    if (budgetEl) budgetEl.textContent = `€${manager.budget} left`;
-                    if (statsEl) statsEl.textContent = `Players: ${manager.players.length}/${auctionConfig.maxPlayers} | Tigers: ${manager.tigerCount}/${auctionConfig.maxTigers} | Lions: ${manager.lionCount}/${auctionConfig.maxLions}`;
+    function generateAuctionInterface() {
+        const auctionPhase = document.getElementById('auction-phase');
 
-                    // Update players list
-                    if (playersEl) {
-                        if (manager.players.length === 0) {
-                            playersEl.innerHTML = '<em style="color: #999;">No players yet</em>';
-                        } else {
-                            playersEl.innerHTML = manager.players.map((player, index) =>
-                                `<div class="player-item">
-                                    <strong>${player.name}</strong> (${player.category}) - €${player.soldPrice}
-                                    <button onclick="removePlayerFromTeam('${manager.name}', ${index})" class="remove-player-btn">Remove</button>
-                                </div>`
-                            ).join('');
-                        }
-                    }
-                } catch (error) {
-                    console.error(`Error updating team for ${manager.name}:`, error);
-                }
-            });
+        auctionPhase.innerHTML = `
+                <div class="header">
+                    <h1 class="title">${auctionConfig.title}</h1>
+                    <p class="subtitle">Live Auction in Progress</p>
+                </div>
+
+                <div class="status-bar">
+                    <span id="remaining-players">Loading auction data...</span>
+                </div>
+
+                <div class="auction-area">
+                    <div id="current-player" class="current-player">
+                        Click "Next Player" to start auction
+                    </div>
+                    <div id="player-details" class="player-details"></div>
+                    <div id="current-bid" class="current-bid"></div>
+
+                    <div id="bid-section" class="bid-buttons hidden">
+                        ${generateBidButtons()}
+                    </div>
+                </div>
+
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="nextPlayer()">Next Player</button>
+                    <button class="control-btn sold-btn" onclick="sellPlayer()" id="sell-btn" disabled>SOLD!</button>
+                    <button class="control-btn base-price-btn" onclick="buyAtBasePrice()" id="base-price-btn" disabled>Buy at Base Price</button>
+                    <button class="control-btn unsold-btn" onclick="markUnsold()" id="unsold-btn" disabled>UNSOLD</button>
+                    <button class="control-btn export-btn" onclick="exportTeams()">Export Results</button>
+                    <button class="control-btn reset-btn" onclick="resetToSetup()">Back to Setup</button>
+                </div>
+
+                <div class="teams-container">
+                    ${generateTeamsDisplay()}
+                </div>
+            `;
+
+        updateDisplay();
+    }
+
+    function generateBidButtons() {
+        return auctionConfig.teams.map(team => `
+                <div class="manager-bid">
+                    <div class="manager-name">${team.managerName}</div>
+                    <div class="team-name-small">${team.teamName}</div>
+                    <button class="bid-btn" onclick="placeBid('${team.managerName}')" id="bid-${team.managerName.toLowerCase().replace(/\s+/g, '-')}">Bid €${auctionConfig.bidIncrement}</button>
+                    <br>
+                    <button class="bid-btn pass-btn" onclick="passBid('${team.managerName}')" id="pass-${team.managerName.toLowerCase().replace(/\s+/g, '-')}">Pass</button>
+                </div>
+            `).join('');
+    }
+
+    function generateTeamsDisplay() {
+        return auctionConfig.teams.map(team => `
+                <div class="team">
+                    <div class="team-header">
+                        <div class="team-name">${team.teamName}</div>
+                        <div class="manager-name-display">Manager: ${team.managerName}</div>
+                    </div>
+                    <div class="team-stats">
+                        <div class="budget" id="budget-${team.managerName.toLowerCase().replace(/\s+/g, '-')}">€${auctionConfig.totalBudget} left</div>
+                        <div class="category-count" id="stats-${team.managerName.toLowerCase().replace(/\s+/g, '-')}">Players: 0/${auctionConfig.maxPlayers}</div>
+                    </div>
+                    <div class="players-list" id="players-${team.managerName.toLowerCase().replace(/\s+/g, '-')}">
+                        <em style="color: #999;">No players yet</em>
+                    </div>
+                </div>
+            `).join('');
+    }
+
+    // Initialize the app
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('Sports Auction app loaded');
+        generateTeams();
+        generateCategories();
+        updatePlayersTable();
+    });
+
+    // Placeholder functions for auction logic (will be implemented)
+    function nextPlayer() {
+        if (!auction.isSetupComplete) return;
+
+        try {
+            let currentPlayer = null;
+
+            // First prioritize regular players from the main pool
+            if (auction.playerPool.length > 0) {
+                // Select random player from main pool
+                const randomIndex = Math.floor(Math.random() * auction.playerPool.length);
+                currentPlayer = auction.playerPool.splice(randomIndex, 1)[0];
+            } else if (auction.unsoldPlayers.length > 0) {
+                // Only after all regular players are done, re-auction unsold players randomly
+                const randomIndex = Math.floor(Math.random() * auction.unsoldPlayers.length);
+                currentPlayer = auction.unsoldPlayers.splice(randomIndex, 1)[0];
+            } else {
+                alert('🎉 All players have been auctioned! Auction complete!');
+                return;
+            }
+
+            auction.currentPlayer = { ...currentPlayer, basePrice: currentPlayer.price };
+            auction.currentBid = currentPlayer.price;
+            auction.highestBidder = null;
+            auction.biddingActive = true;
+
+            updateDisplay();
+        } catch (error) {
+            console.error('Error in nextPlayer:', error);
+            alert('Error selecting next player. Please try again.');
+        }
+    }
+
+    function placeBid(manager) {
+        if (!auction.biddingActive || !auction.currentPlayer) return;
+
+        const managerData = auction.managers[manager];
+        if (!managerData) return;
+
+        const newBid = auction.currentBid + auctionConfig.bidIncrement;
+
+        if (canManagerBid(managerData, newBid, auction.currentPlayer.category)) {
+            auction.currentBid = newBid;
+            auction.highestBidder = manager;
+            updateDisplay();
+            console.log(`${manager} bid €${newBid} for ${auction.currentPlayer.name}`);
+        }
+    }
+
+    function canManagerBid(manager, amount, category) {
+        if (amount > manager.budget) return false;
+        if (manager.players.length >= auctionConfig.maxPlayers) return false;
+
+        // Check category limits
+        const categoryConfig = auctionConfig.categories.find(cat => cat.name === category);
+        if (categoryConfig && manager.categoryCounts[category] >= categoryConfig.maxPerTeam) return false;
+
+        return true;
+    }
+
+    function passBid(manager) {
+        console.log(`${manager} passed on ${auction.currentPlayer ? auction.currentPlayer.name : 'current player'}`);
+    }
+
+    function sellPlayer() {
+        if (!auction.currentPlayer) {
+            alert('No player to sell!');
+            return;
         }
 
-        function nextPlayer() {
-            try {
-                let currentPlayer = null;
+        if (!auction.highestBidder) {
+            // Check eligible managers for base price
+            const eligibleManagers = Object.values(auction.managers).filter(manager =>
+                canManagerBid(manager, auction.currentPlayer.basePrice, auction.currentPlayer.category)
+            );
 
-                // First check if we have unsold players to retry
-                if (auction.unsoldPlayers.length > 0) {
-                    currentPlayer = auction.unsoldPlayers.shift();
-                } else {
-                    // Select next player based on category rotation
-                    if (auction.nextCategory === "TIGER" && auction.tigerPool.length > 0) {
-                        currentPlayer = auction.tigerPool.shift();
-                        auction.nextCategory = "LION";
-                    } else if (auction.nextCategory === "LION" && auction.lionPool.length > 0) {
-                        currentPlayer = auction.lionPool.shift();
-                        auction.nextCategory = "TIGER";
-                    } else if (auction.tigerPool.length > 0) {
-                        currentPlayer = auction.tigerPool.shift();
-                    } else if (auction.lionPool.length > 0) {
-                        currentPlayer = auction.lionPool.shift();
-                    } else {
-                        // Check if all teams have required players
-                        const allTeamsFull = Object.values(auction.managers).every(m => m.players.length >= auctionConfig.maxPlayers);
-                        if (allTeamsFull) {
-                            alert(`🎉 All teams have ${auctionConfig.maxPlayers} players! Auction complete!`);
-                        } else {
-                            alert('Some teams still need players, but no more players available!');
-                        }
-                        return;
-                    }
-                }
-
-                auction.currentPlayer = currentPlayer;
-                auction.currentBid = currentPlayer.basePrice;  // Start with base price
-                auction.highestBidder = null;
-                auction.biddingActive = true;
-
-                updateDisplay();
-                // No timer - bidding continues until decision made
-            } catch (error) {
-                console.error('Error in nextPlayer:', error);
-                alert('Error selecting next player. Please try again.');
+            if (eligibleManagers.length === 0) {
+                alert('No manager can afford this player!');
+                return;
+            } else if (eligibleManagers.length === 1) {
+                auction.highestBidder = eligibleManagers[0].name;
+                auction.currentBid = auction.currentPlayer.basePrice;
             }
         }
 
-        function placeBid(managerName) {
-            try {
-                if (!auction.biddingActive || !auction.currentPlayer) return;
+        if (!auction.highestBidder) {
+            alert('Please select a buyer or have managers bid first!');
+            return;
+        }
 
-                const manager = auction.managers[managerName];
-                if (!manager) return;
+        const player = auction.currentPlayer;
+        const manager = auction.managers[auction.highestBidder];
 
-                const newBid = auction.currentBid + 10;  // €10 increments
+        // Finalize sale
+        player.soldPrice = auction.currentBid;
+        player.soldTo = auction.highestBidder;
 
-                if (canManagerBid(manager, newBid, auction.currentPlayer.category)) {
-                    auction.currentBid = newBid;
-                    auction.highestBidder = managerName;
+        manager.budget -= auction.currentBid;
+        manager.players.push(player);
+        manager.categoryCounts[player.category]++;
 
-                    updateDisplay();
-                    // No timer reset - no timer used
+        // Reset auction state
+        auction.currentPlayer = null;
+        auction.biddingActive = false;
 
-                    console.log(`${managerName} bid €${newBid} for ${auction.currentPlayer.name}`);
-                }
-            } catch (error) {
-                console.error('Error placing bid:', error);
+        updateDisplay();
+        alert(`🎉 ${player.name} sold to ${auction.highestBidder} for €${auction.currentBid}!`);
+    }
+
+    function buyAtBasePrice() {
+        if (!auction.currentPlayer) {
+            alert('No player to buy!');
+            return;
+        }
+
+        const eligibleManagers = Object.values(auction.managers).filter(manager =>
+            canManagerBid(manager, auction.currentPlayer.basePrice, auction.currentPlayer.category)
+        );
+
+        if (eligibleManagers.length === 0) {
+            alert('No manager can afford this player at base price!');
+            return;
+        } else if (eligibleManagers.length === 1) {
+            auction.highestBidder = eligibleManagers[0].name;
+            auction.currentBid = auction.currentPlayer.basePrice;
+            sellPlayer();
+        } else {
+            const managerNames = eligibleManagers.map(m => m.name).join(', ');
+            const chosenManager = prompt(`Multiple managers can afford this player (${managerNames}). Who wants to buy at base price?`);
+
+            if (chosenManager && eligibleManagers.find(m => m.name === chosenManager)) {
+                auction.highestBidder = chosenManager;
+                auction.currentBid = auction.currentPlayer.basePrice;
+                sellPlayer();
             }
         }
+    }
 
-        function passBid(managerName) {
-            console.log(`${managerName} passed on ${auction.currentPlayer ? auction.currentPlayer.name : 'current player'}`);
+    function markUnsold() {
+        if (!auction.currentPlayer) {
+            alert('No player to mark as unsold!');
+            return;
         }
 
-        function sellPlayer() {
-            try {
-                if (!auction.currentPlayer) {
-                    alert('No player to sell!');
-                    return;
-                }
+        auction.unsoldPlayers.push(auction.currentPlayer);
+        const playerName = auction.currentPlayer.name;
 
-                // If no one has bid yet, allow base price purchase by eligible managers
-                if (!auction.highestBidder) {
-                    const eligibleManagers = Object.values(auction.managers).filter(manager =>
-                        canManagerBid(manager, auction.currentPlayer.basePrice, auction.currentPlayer.category)
-                    );
+        auction.currentPlayer = null;
+        auction.biddingActive = false;
 
-                    if (eligibleManagers.length === 0) {
-                        alert('No manager can afford this player!');
-                        return;
-                    } else if (eligibleManagers.length === 1) {
-                        // Only one manager can afford - sell at base price
-                        auction.highestBidder = eligibleManagers[0].name;
-                        auction.currentBid = auction.currentPlayer.basePrice;
-                        alert(`${auction.currentPlayer.name} sold to ${auction.highestBidder} at base price €${auction.currentBid}!`);
-                    } else {
-                        // Multiple managers can afford - they need to bid
-                        alert('Multiple managers can afford this player. Please have them bid!');
-                        return;
-                    }
-                }
+        updateDisplay();
+        alert(`${playerName} will be re-auctioned later!`);
+    }
 
-                const player = auction.currentPlayer;
-                const manager = auction.managers[auction.highestBidder];
-
-                // Finalize sale
-                player.soldPrice = auction.currentBid;
-                player.soldTo = auction.highestBidder;
-
-                manager.budget -= auction.currentBid;
-                manager.players.push(player);
-
-                if (player.category === "TIGER") {
-                    manager.tigerCount++;
-                } else if (player.category === "LION") {
-                    manager.lionCount++;
-                }
-                // MANAGER category doesn't count toward Tiger/Lion limits
-
-                // Reset auction state
-                auction.currentPlayer = null;
-                auction.biddingActive = false;
-
-                updateDisplay();
-
-                alert(`🎉 ${player.name} sold to ${auction.highestBidder} for €${auction.currentBid}!`);
-            } catch (error) {
-                console.error('Error selling player:', error);
-                alert('Error selling player. Please try again.');
-            }
-        }
-
-        function markUnsold() {
-            try {
-                if (!auction.currentPlayer) {
-                    alert('No player to mark as unsold!');
-                    return;
-                }
-
-                // Add player back to unsold list for re-auction
-                auction.unsoldPlayers.push(auction.currentPlayer);
-
-                const playerName = auction.currentPlayer.name;
-
-                // Reset auction state
-                auction.currentPlayer = null;
-                auction.biddingActive = false;
-
-                updateDisplay();
-
-                alert(`${playerName} will be re-auctioned later!`);
-            } catch (error) {
-                console.error('Error marking player as unsold:', error);
-                alert('Error marking player as unsold. Please try again.');
-            }
-        }
-
-        function resetAuction() {
-            if (confirm('Are you sure you want to reset the entire auction?')) {
-                try {
-                    auction = {
-                        tigerPool: shuffle(tigerPlayers),
-                        lionPool: shuffle(lionPlayers),
-                        nextCategory: "TIGER",
-                        currentPlayer: null,
-                        currentBid: 0,
-                        highestBidder: null,
-                        biddingActive: false,
-                        managers: {
-                            "Imtiaz": { name: "Imtiaz", teamName: "Patronus Voyagers", budget: 1900, players: [{ name: "Imtiaz", category: "MANAGER", soldPrice: 100 }], tigerCount: 0, lionCount: 0 },
-                            "Ifthekhar": { name: "Ifthekhar", teamName: "Alpha Knight", budget: 1920, players: [{ name: "Ifthekhar", category: "MANAGER", soldPrice: 80 }], tigerCount: 0, lionCount: 0 },
-                            "Mahfuz": { name: "Mahfuz", teamName: "X-Mafias Return", budget: 2000, players: [], tigerCount: 0, lionCount: 0 }
-                        },
-                        unsoldPlayers: []
-                    };
-
-                    updateDisplay();
-                    console.log('Auction reset successfully');
-                } catch (error) {
-                    console.error('Error resetting auction:', error);
-                    alert('Error resetting auction. Please refresh the page.');
-                }
-            }
-        }
-
-        function exportTeams() {
-            try {
-                // Create PDF content
-                let pdfContent = `
-CRICKET POTSDAM - AUCTION RESULTS
+    function exportTeams() {
+        let content = `
+${auctionConfig.title.toUpperCase()} - AUCTION RESULTS
 Date: ${new Date().toLocaleDateString()}
 Time: ${new Date().toLocaleTimeString()}
 
@@ -919,254 +1328,210 @@ TEAM SUMMARY
 
 `;
 
-                Object.values(auction.managers).forEach(manager => {
-                    const totalSpent = manager.players.reduce((sum, player) => sum + (player.soldPrice || 0), 0);
-                    pdfContent += `
+        Object.values(auction.managers).forEach(manager => {
+            const totalSpent = manager.players.reduce((sum, player) => sum + (player.soldPrice || 0), 0);
+            content += `
 ${manager.teamName.toUpperCase()}
 Manager: ${manager.name}
 Budget Left: €${manager.budget}
 Total Spent: €${totalSpent}
-Players: ${manager.players.length}/${auctionConfig.maxPlayers} | Tigers: ${manager.tigerCount}/${auctionConfig.maxTigers} | Lions: ${manager.lionCount}/${auctionConfig.maxLions}
+Players: ${manager.players.length}/${auctionConfig.maxPlayers}
 
-PLAYERS:
 `;
-                    manager.players.forEach(player => {
-                        pdfContent += `  • ${player.name} (${player.category}) - €${player.soldPrice || 0}\n`;
-                    });
-                    pdfContent += `\n`;
-                });
 
-                pdfContent += `
+            // Show category counts
+            auctionConfig.categories.forEach(cat => {
+                content += `${cat.name}: ${manager.categoryCounts[cat.name]}/${cat.maxPerTeam} `;
+            });
+            content += `\n\nPLAYERS:\n`;
+
+            manager.players.forEach(player => {
+                content += `  • ${player.name} (${player.category}) - €${player.soldPrice || 0}\n`;
+            });
+            content += `\n`;
+        });
+
+        content += `
 =====================================
 AUCTION STATISTICS
 =====================================
-Remaining Tigers: ${auction.tigerPool.length}
-Remaining Lions: ${auction.lionPool.length}
+Remaining Players: ${auction.playerPool.length}
 Unsold Players: ${auction.unsoldPlayers.length}
-
-Total Budget Used: €${Object.values(auction.managers).reduce((sum, m) => sum + (2000 - m.budget), 0)}
+Total Budget Used: €${Object.values(auction.managers).reduce((sum, m) => sum + (auctionConfig.totalBudget - m.budget), 0)}
 `;
 
-                // Create and download as text file (PDF generation requires additional libraries)
-                const dataBlob = new Blob([pdfContent], { type: 'text/plain' });
-                const url = URL.createObjectURL(dataBlob);
+        const dataBlob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(dataBlob);
 
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `cricket_auction_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`;
-                link.click();
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${auctionConfig.title.replace(/\s+/g, '_')}_auction_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`;
+        link.click();
 
-                URL.revokeObjectURL(url);
-                console.log('Teams exported successfully');
-            } catch (error) {
-                console.error('Error exporting teams:', error);
-                alert('Error exporting teams. Please try again.');
+        URL.revokeObjectURL(url);
+    }
+
+    function updateDisplay() {
+        if (!auction.isSetupComplete) return;
+
+        try {
+            // Update status bar
+            const totalBudget = Object.values(auction.managers).reduce((sum, m) => sum + m.budget, 0);
+            const statusEl = document.getElementById('remaining-players');
+            if (statusEl) {
+                statusEl.textContent = `Players Remaining: ${auction.playerPool.length} | Unsold: ${auction.unsoldPlayers.length} | Total Budget Left: €${totalBudget}`;
             }
+
+            // Update current player display
+            if (auction.currentPlayer) {
+                const currentPlayerEl = document.getElementById('current-player');
+                const playerDetailsEl = document.getElementById('player-details');
+                const currentBidEl = document.getElementById('current-bid');
+
+                if (currentPlayerEl) currentPlayerEl.textContent = auction.currentPlayer.name;
+                if (playerDetailsEl) {
+                    playerDetailsEl.innerHTML = `Category: <strong>${auction.currentPlayer.category}</strong> | Base Price: €${auction.currentPlayer.basePrice}`;
+                }
+
+                const bidderText = auction.highestBidder ? ` - ${auction.highestBidder}` : '';
+                if (currentBidEl) currentBidEl.textContent = `Current Bid: €${auction.currentBid}${bidderText}`;
+
+                const bidSection = document.getElementById('bid-section');
+                if (bidSection) bidSection.classList.remove('hidden');
+
+                ['sell-btn', 'base-price-btn', 'unsold-btn'].forEach(btnId => {
+                    const btn = document.getElementById(btnId);
+                    if (btn) btn.disabled = false;
+                });
+
+                updateBidButtons();
+            } else {
+                const currentPlayerEl = document.getElementById('current-player');
+                const playerDetailsEl = document.getElementById('player-details');
+                const currentBidEl = document.getElementById('current-bid');
+                const bidSection = document.getElementById('bid-section');
+
+                if (currentPlayerEl) currentPlayerEl.textContent = 'Click "Next Player" to continue auction';
+                if (playerDetailsEl) playerDetailsEl.textContent = '';
+                if (currentBidEl) currentBidEl.textContent = '';
+                if (bidSection) bidSection.classList.add('hidden');
+
+                ['sell-btn', 'base-price-btn', 'unsold-btn'].forEach(btnId => {
+                    const btn = document.getElementById(btnId);
+                    if (btn) btn.disabled = true;
+                });
+            }
+
+            updateTeams();
+        } catch (error) {
+            console.error('Error updating display:', error);
         }
+    }
 
-        // Timer functions removed - no timer needed
+    function updateBidButtons() {
+        if (!auction.currentPlayer) return;
 
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('Page loaded, initializing auction...');
-            updateDisplay();
-            console.log('Auction initialized successfully!');
+        const nextBid = auction.currentBid + auctionConfig.bidIncrement;
+
+        auctionConfig.teams.forEach(team => {
+            const manager = auction.managers[team.managerName];
+            const managerId = team.managerName.toLowerCase().replace(/\s+/g, '-');
+
+            const bidBtn = document.getElementById(`bid-${managerId}`);
+            const passBtn = document.getElementById(`pass-${managerId}`);
+
+            if (!bidBtn || !passBtn) return;
+
+            const canBid = canManagerBid(manager, nextBid, auction.currentPlayer.category);
+
+            bidBtn.disabled = !canBid || !auction.biddingActive;
+            passBtn.disabled = !auction.biddingActive;
+
+            bidBtn.textContent = canBid ? `Bid €${nextBid}` : 'Cannot Bid';
+
+            if (auction.highestBidder === team.managerName) {
+                bidBtn.style.backgroundColor = '#228B22';
+            } else {
+                bidBtn.style.backgroundColor = canBid ? '#000080' : '#666';
+            }
         });
+    }
 
-        // Initialize immediately as backup
-        setTimeout(function () {
+    function updateTeams() {
+        Object.values(auction.managers).forEach(manager => {
+            const managerId = manager.name.toLowerCase().replace(/\s+/g, '-');
+
+            const budgetEl = document.getElementById(`budget-${managerId}`);
+            const statsEl = document.getElementById(`stats-${managerId}`);
+            const playersEl = document.getElementById(`players-${managerId}`);
+
+            if (budgetEl) budgetEl.textContent = `€${manager.budget} left`;
+
+            if (statsEl) {
+                let statsText = `Players: ${manager.players.length}/${auctionConfig.maxPlayers}`;
+                auctionConfig.categories.forEach(cat => {
+                    statsText += ` | ${cat.name}: ${manager.categoryCounts[cat.name]}/${cat.maxPerTeam}`;
+                });
+                statsEl.textContent = statsText;
+            }
+
+            if (playersEl) {
+                if (manager.players.length === 0) {
+                    playersEl.innerHTML = '<em style="color: #999;">No players yet</em>';
+                } else {
+                    playersEl.innerHTML = manager.players.map((player, index) =>
+                        `<div class="player-item">
+                                <strong>${player.name}</strong> (${player.category}) - €${player.soldPrice}
+                                <button onclick="removePlayerFromTeam('${manager.name}', ${index})" class="remove-player-btn">Remove</button>
+                            </div>`
+                    ).join('');
+                }
+            }
+        });
+    }
+
+    function removePlayerFromTeam(managerName, playerIndex) {
+        const manager = auction.managers[managerName];
+        const player = manager.players[playerIndex];
+
+        if (!player) return;
+
+        if (confirm(`Remove ${player.name} from ${manager.teamName}? This will make them available for auction again.`)) {
+            manager.players.splice(playerIndex, 1);
+            manager.budget += player.soldPrice || 0;
+            manager.categoryCounts[player.category]--;
+
+            // Add back to player pool
+            auction.playerPool.push({
+                name: player.name,
+                price: player.basePrice || player.soldPrice,
+                category: player.category
+            });
+
             updateDisplay();
-            console.log('Auction initialized (backup)');
-        }, 100);
-
-        console.log('Cricket Potsdam Auction script loaded successfully!');
-
-        function buyAtBasePrice() {
-            try {
-                if (!auction.currentPlayer) {
-                    alert('No player to buy!');
-                    return;
-                }
-
-                const eligibleManagers = Object.values(auction.managers).filter(manager =>
-                    canManagerBid(manager, auction.currentPlayer.basePrice, auction.currentPlayer.category)
-                );
-
-                if (eligibleManagers.length === 0) {
-                    alert('No manager can afford this player at base price!');
-                    return;
-                } else if (eligibleManagers.length === 1) {
-                    // Only one manager can afford - sell at base price automatically
-                    auction.highestBidder = eligibleManagers[0].name;
-                    auction.currentBid = auction.currentPlayer.basePrice;
-                    sellPlayer();
-                } else {
-                    // Multiple managers can afford - let them choose
-                    const managerNames = eligibleManagers.map(m => m.name).join(', ');
-                    const chosenManager = prompt(`Multiple managers can afford this player (${managerNames}). Who wants to buy at base price?`);
-
-                    if (chosenManager && eligibleManagers.find(m => m.name === chosenManager)) {
-                        auction.highestBidder = chosenManager;
-                        auction.currentBid = auction.currentPlayer.basePrice;
-                        sellPlayer();
-                    }
-                }
-            } catch (error) {
-                console.error('Error buying at base price:', error);
-                alert('Error processing base price purchase.');
-            }
+            alert(`${player.name} removed from ${manager.teamName} and is now available for auction.`);
         }
+    }
 
-        function getOriginalBasePrice(playerName, category) {
-            // Find player in original data to get their true base price
-            const allPlayers = [...tigerPlayers, ...lionPlayers];
-            const originalPlayer = allPlayers.find(p => p.name === playerName);
-            
-            if (originalPlayer) {
-                return originalPlayer.basePrice;
-            }
-            
-            // Fallback to default prices if not found (for custom players)
-            return category === "TIGER" ? 120 : 80;
+    function resetToSetup() {
+        if (confirm('Are you sure you want to go back to setup? This will reset the entire auction.')) {
+            document.getElementById('auction-phase').classList.add('hidden');
+            document.getElementById('setup-phase').classList.remove('hidden');
+
+            // Reset auction state
+            auction = {
+                isSetupComplete: false,
+                playerPool: [],
+                currentPlayer: null,
+                currentBid: 0,
+                highestBidder: null,
+                biddingActive: false,
+                managers: {},
+                unsoldPlayers: []
+            };
         }
-
-        function removePlayerFromTeam(managerName, playerIndex) {
-            try {
-                const manager = auction.managers[managerName];
-                const player = manager.players[playerIndex];
-
-                if (!player) return;
-
-                if (confirm(`Remove ${player.name} from ${manager.teamName}? This will make them available for auction again.`)) {
-                    // Remove player from team
-                    manager.players.splice(playerIndex, 1);
-
-                    // Refund budget
-                    manager.budget += player.soldPrice || 0;
-
-                    // Update category counts
-                    if (player.category === "TIGER") {
-                        manager.tigerCount--;
-                    } else if (player.category === "LION") {
-                        manager.lionCount--;
-                    }
-
-                    // Add back to appropriate pool with ORIGINAL base price (skip manager-players)
-                    if (player.category === "TIGER") {
-                        const originalPrice = getOriginalBasePrice(player.name, "TIGER");
-                        auction.tigerPool.push({ name: player.name, basePrice: originalPrice, category: "TIGER" });
-                    } else if (player.category === "LION") {
-                        const originalPrice = getOriginalBasePrice(player.name, "LION");
-                        auction.lionPool.push({ name: player.name, basePrice: originalPrice, category: "LION" });
-                    }
-
-                    updateDisplay();
-                    alert(`${player.name} removed from ${manager.teamName} and is now available for auction.`);
-                }
-            } catch (error) {
-                console.error('Error removing player:', error);
-                alert('Error removing player.');
-            }
-        }
-
-        function addCustomPlayer() {
-            try {
-                const nameInput = document.getElementById('custom-player-name');
-                const priceInput = document.getElementById('custom-player-price');
-                const categorySelect = document.getElementById('custom-player-category');
-
-                const name = nameInput.value.trim();
-                const price = parseInt(priceInput.value);
-                const category = categorySelect.value;
-
-                if (!name) {
-                    alert('Please enter a player name.');
-                    return;
-                }
-
-                if (!price || price < 50 || price > 300) {
-                    alert('Please enter a valid price between €50 and €300.');
-                    return;
-                }
-
-                // Check if player already exists
-                const existsInTigers = auction.tigerPool.some(p => p.name.toLowerCase() === name.toLowerCase());
-                const existsInLions = auction.lionPool.some(p => p.name.toLowerCase() === name.toLowerCase());
-                const existsInUnsold = auction.unsoldPlayers.some(p => p.name.toLowerCase() === name.toLowerCase());
-
-                if (existsInTigers || existsInLions || existsInUnsold) {
-                    alert('A player with this name already exists.');
-                    return;
-                }
-
-                // Create new player
-                const newPlayer = {
-                    name: name,
-                    basePrice: price,
-                    category: category
-                };
-
-                // Add to appropriate pool
-                if (category === "TIGER") {
-                    auction.tigerPool.push(newPlayer);
-                } else {
-                    auction.lionPool.push(newPlayer);
-                }
-
-                // Clear form
-                nameInput.value = '';
-                priceInput.value = '';
-                categorySelect.value = 'TIGER';
-
-                updateDisplay();
-                alert(`${name} (${category}) with base price €${price} added to auction!`);
-
-            } catch (error) {
-                console.error('Error adding custom player:', error);
-                alert('Error adding player. Please try again.');
-            }
-        }
-
-        function updateTeamRules() {
-            try {
-                const maxPlayers = parseInt(document.getElementById('max-players').value);
-                const maxTigers = parseInt(document.getElementById('max-tigers').value);
-                const maxLions = parseInt(document.getElementById('max-lions').value);
-                
-                if (maxPlayers < 6 || maxPlayers > 12) {
-                    alert('Max players must be between 6 and 12.');
-                    return;
-                }
-                
-                if (maxTigers < 2 || maxTigers > 8) {
-                    alert('Max tigers must be between 2 and 8.');
-                    return;
-                }
-                
-                if (maxLions < 2 || maxLions > 8) {
-                    alert('Max lions must be between 2 and 8.');
-                    return;
-                }
-                
-                if (maxTigers + maxLions > maxPlayers) {
-                    alert('Sum of max tigers and lions cannot exceed max players.');
-                    return;
-                }
-                
-                // Update configuration
-                auctionConfig.maxPlayers = maxPlayers;
-                auctionConfig.maxTigers = maxTigers;
-                auctionConfig.maxLions = maxLions;
-                
-                updateDisplay();
-                alert(`Team rules updated! Max: ${maxPlayers} players, ${maxTigers} tigers, ${maxLions} lions per team.`);
-                
-            } catch (error) {
-                console.error('Error updating team rules:', error);
-                alert('Error updating team rules.');
-            }
-        }
-    </script>
+    }
+</script>
 </body>
 
 </html>
