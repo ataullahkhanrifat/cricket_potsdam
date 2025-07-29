@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,7 +19,7 @@
             color: white;
             text-align: center;
         }
-        
+
         .container {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -28,7 +29,7 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             max-width: 600px;
         }
-        
+
         h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
@@ -37,13 +38,13 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         .subtitle {
             font-size: 1.2rem;
             margin-bottom: 30px;
             opacity: 0.9;
         }
-        
+
         .launch-btn {
             display: inline-block;
             background: linear-gradient(45deg, #4CAF50, #45a049);
@@ -56,34 +57,34 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
         }
-        
+
         .launch-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
         }
-        
+
         .features {
             margin-top: 30px;
             text-align: left;
             opacity: 0.9;
         }
-        
+
         .features h3 {
             margin-bottom: 15px;
             color: #f0f0f0;
         }
-        
+
         .features ul {
             list-style: none;
             padding: 0;
         }
-        
+
         .features li {
             padding: 5px 0;
             position: relative;
             padding-left: 25px;
         }
-        
+
         .features li::before {
             content: "✓";
             position: absolute;
@@ -91,19 +92,19 @@
             color: #4CAF50;
             font-weight: bold;
         }
-        
+
         .redirect-notice {
             margin-top: 20px;
             font-size: 0.9rem;
             opacity: 0.7;
         }
-        
+
         @media (max-width: 768px) {
             .container {
                 margin: 20px;
                 padding: 30px 20px;
             }
-            
+
             h1 {
                 font-size: 2rem;
             }
@@ -116,15 +117,16 @@
         }, 5000);
     </script>
 </head>
+
 <body>
     <div class="container">
         <h1>🏆 Universal Sports Auction</h1>
         <p class="subtitle">Professional auction management for any sport</p>
-        
+
         <a href="./src/web/auction_web.html" class="launch-btn">
             🚀 Launch Application
         </a>
-        
+
         <div class="features">
             <h3>🌟 Features</h3>
             <ul>
@@ -136,10 +138,11 @@
                 <li>Mobile-responsive interface</li>
             </ul>
         </div>
-        
+
         <div class="redirect-notice">
             Automatically redirecting in 5 seconds...
         </div>
     </div>
 </body>
+
 </html>
