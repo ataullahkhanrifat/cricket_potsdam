@@ -1,0 +1,120 @@
+{
+  "title": "Universal Sports Championship 2025",
+  "total_budget": 3000,
+  "bid_increment": 15,
+  "max_players": 10,
+  "teams": [
+    {
+      "team_name": "Thunder Bolts",
+      "manager_name": "Alex Johnson"
+    },
+    {
+      "team_name": "Lightning Strikes",
+      "manager_name": "Maria Rodriguez"
+    },
+    {
+      "team_name": "Storm Chasers",
+      "manager_name": "David Chen"
+    },
+    {
+      "team_name": "Fire Dragons",
+      "manager_name": "Sarah Wilson"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Premium",
+      "max_per_team": 3
+    },
+    {
+      "name": "Standard",
+      "max_per_team": 4
+    },
+    {
+      "name": "Rookie",
+      "max_per_team": 3
+    }
+  ],
+  "players": [
+    {
+      "name": "Lionel Messi",
+      "category": "Premium",
+      "price": 300
+    },
+    {
+      "name": "Cristiano Ronaldo",
+      "category": "Premium",
+      "price": 290
+    },
+    {
+      "name": "Neymar Jr",
+      "category": "Premium",
+      "price": 250
+    },
+    {
+      "name": "Kylian Mbappe",
+      "category": "Premium",
+      "price": 240
+    },
+    {
+      "name": "Kevin De Bruyne",
+      "category": "Standard",
+      "price": 180
+    },
+    {
+      "name": "Mohamed Salah",
+      "category": "Standard",
+      "price": 170
+    },
+    {
+      "name": "Robert Lewandowski",
+      "category": "Standard",
+      "price": 160
+    },
+    {
+      "name": "Virgil van Dijk",
+      "category": "Standard",
+      "price": 150
+    },
+    {
+      "name": "Sadio Mané",
+      "category": "Standard",
+      "price": 140
+    },
+    {
+      "name": "Sergio Ramos",
+      "category": "Standard",
+      "price": 130
+    },
+    {
+      "name": "Jude Bellingham",
+      "category": "Rookie",
+      "price": 100
+    },
+    {
+      "name": "Pedri",
+      "category": "Rookie",
+      "price": 90
+    },
+    {
+      "name": "Gavi",
+      "category": "Rookie",
+      "price": 85
+    },
+    {
+      "name": "Jamal Musiala",
+      "category": "Rookie",
+      "price": 80
+    },
+    {
+      "name": "Ryan Gravenberch",
+      "category": "Rookie",
+      "price": 75
+    },
+    {
+      "name": "Eduardo Camavinga",
+      "category": "Rookie",
+      "price": 70
+    }
+  ]
+}

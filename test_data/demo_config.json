@@ -1,0 +1,81 @@
+{
+  "title": "Modern Sports Auction Demo",
+  "total_budget": 2500,
+  "bid_increment": 15,
+  "max_players": 8,
+  "teams": [
+    {
+      "team_name": "Thunder Bolts",
+      "manager_name": "Alex Johnson"
+    },
+    {
+      "team_name": "Lightning Strikes",
+      "manager_name": "Maria Rodriguez"
+    },
+    {
+      "team_name": "Storm Chasers",
+      "manager_name": "David Chen"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Stars",
+      "max_per_team": 3
+    },
+    {
+      "name": "Veterans",
+      "max_per_team": 3
+    },
+    {
+      "name": "Rookies",
+      "max_per_team": 2
+    }
+  ],
+  "players": [
+    {
+      "name": "Superstar Alpha",
+      "category": "Stars",
+      "price": 200
+    },
+    {
+      "name": "Megastar Beta",
+      "category": "Stars",
+      "price": 180
+    },
+    {
+      "name": "Champion Gamma",
+      "category": "Stars",
+      "price": 160
+    },
+    {
+      "name": "Veteran Delta",
+      "category": "Veterans",
+      "price": 120
+    },
+    {
+      "name": "Veteran Echo",
+      "category": "Veterans",
+      "price": 110
+    },
+    {
+      "name": "Veteran Foxtrot",
+      "category": "Veterans",
+      "price": 100
+    },
+    {
+      "name": "Rookie Golf",
+      "category": "Rookies",
+      "price": 80
+    },
+    {
+      "name": "Rookie Hotel",
+      "category": "Rookies",
+      "price": 75
+    },
+    {
+      "name": "Rookie India",
+      "category": "Rookies",
+      "price": 70
+    }
+  ]
+}

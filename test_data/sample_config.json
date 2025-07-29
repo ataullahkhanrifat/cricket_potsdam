@@ -1,0 +1,61 @@
+{
+  "title": "Sample Test Tournament",
+  "total_budget": 1500,
+  "bid_increment": 25,
+  "max_players": 6,
+  "teams": [
+    {
+      "team_name": "Alpha Squad",
+      "manager_name": "John Doe"
+    },
+    {
+      "team_name": "Beta Force",
+      "manager_name": "Jane Smith"
+    },
+    {
+      "team_name": "Gamma Elite",
+      "manager_name": "Bob Wilson"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Elite",
+      "max_per_team": 2
+    },
+    {
+      "name": "Professional",
+      "max_per_team": 3
+    },
+    {
+      "name": "Emerging",
+      "max_per_team": 1
+    }
+  ],
+  "players": [
+    {
+      "name": "Elite Player 1",
+      "category": "Elite",
+      "price": 200
+    },
+    {
+      "name": "Elite Player 2",
+      "category": "Elite",
+      "price": 180
+    },
+    {
+      "name": "Pro Player 1",
+      "category": "Professional",
+      "price": 120
+    },
+    {
+      "name": "Pro Player 2",
+      "category": "Professional",
+      "price": 100
+    },
+    {
+      "name": "Emerging Player 1",
+      "category": "Emerging",
+      "price": 50
+    }
+  ]
+}

@@ -1,4 +1,8 @@
-# Universal Sports Auction System 🏆
+# Universal Sports Auction Platform
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
+[![Live Demo](https://img.shields.io/badge/demo-live-green.svg)](https://ataullahkhanrifat.github.io/cricket_potsdam/)
 
 A modern, configurable sports auction application that can be adapted for any sport or event. Originally developed for Cricket Potsdam, now evolved into a universal platform with professional UI/UX design.
 
@@ -8,106 +12,46 @@ A modern, configurable sports auction application that can be adapted for any sp
 ## 🚀 Quick Start
 
 ### Web Version (Recommended)
-Simply open `auction_web.html` in your browser - **no installation required!**
+```bash
+# Method 1: Open directly in browser
+open src/web/auction_web.html
 
-### Alternative: GitHub Pages
-Visit the live demo link above for instant access.
+# Method 2: Use local server
+python scripts/server.py
+# Then visit: http://localhost:8000/src/web/auction_web.html
+```
 
-## ✨ Key Features
+### Python Versions
+```bash
+# GUI Version (tkinter)
+python src/python/cricket_auction.py
+```
 
-### 🔧 Universal Configuration
-- **Any Sport**: Cricket, Football, Basketball, Fantasy leagues, etc.
-- **Custom Teams**: 2-8 teams with personalized names and managers
-- **Flexible Categories**: 1-5 player types with individual team limits
-- **Configurable Budgets**: €500-€10,000 per team (customizable currency)
-- **Adjustable Bidding**: €5-€100 bid increments
-
-### 🎮 Live Auction Experience
-- **Smart Randomization**: True random player selection with Fisher-Yates shuffle
-- **Real-time Bidding**: Interactive bid buttons with instant feedback
-- **Multiple Purchase Options**: 
-  - Competitive bidding with increments
-  - Instant purchase at base price
-  - Pass/skip options
-- **Unsold Player Management**: Failed auctions automatically re-enter queue
-- **Budget Validation**: Real-time eligibility checking
-- **Team Limits**: Automatic category restrictions
-
-### 📊 Professional Management
-- **Player Database**: Add/remove players during auction
-- **Live Statistics**: Real-time budget and roster tracking
-- **Export System**: Complete auction results with detailed statistics
-- **Data Persistence**: Browser storage saves progress automatically
-- **Team Overview**: Visual cards showing budgets, players, and limits
-
-### 🎨 Modern UI/UX Design
-- **Glass Morphism**: Translucent cards with backdrop blur effects
-- **Gradient Themes**: Professional purple-to-blue color schemes
-- **Responsive Design**: Perfect on desktop, tablet, and mobile
-- **Typography**: Inter font family for maximum readability
-- **Micro-interactions**: Smooth animations and hover effects
-- **Dark Theme**: Professional appearance ideal for presentations
-
-## 🎯 Perfect For
-
-### 🏆 Sports Events
-- **Fantasy Drafts**: NFL, NBA, MLB, Premier League
-- **Tournament Selection**: Local leagues and competitions
-- **Team Building**: Corporate events and activities
-- **Gaming Tournaments**: eSports player auctions
-
-### 📱 Presentation Ready
-- **Video Calls**: Optimized for Zoom, Teams, Meet screen sharing
-- **Live Streaming**: Professional appearance for broadcasts
-- **Mobile Friendly**: Works on phones and tablets
-- **Offline Capable**: No internet required after initial load
-
-## 🛠️ How to Use
-
-### Setup Phase (2-3 minutes)
-1. **Open Application**: Launch `auction_web.html` in any browser
-2. **Configure Auction**: Set title, budget, and bid increments
-3. **Create Teams**: Add 2-8 teams with manager names
-4. **Define Categories**: Set up player types (e.g., "Striker", "Midfielder", "Defender")
-5. **Add Players**: Build your player database with names, prices, and categories
-
-### Live Auction Process
-1. **Start Auction**: Click the prominent "START AUCTION" button
-2. **Next Player**: Random selection from your player pool
-3. **Bidding Phase**: 
-   - Managers use individual bid buttons
-   - Real-time price updates
-   - Budget validation prevents overbidding
-4. **Sale Options**:
-   - **SOLD!**: Award to highest bidder
-   - **Buy at Base Price**: Instant purchase option
-   - **UNSOLD**: Re-auction later
-5. **Continue**: Repeat until all players are assigned
-6. **Export Results**: Generate final team summaries
-
-### Advanced Features
-- **Mid-Auction Changes**: Add new players or remove existing ones
-- **Budget Restoration**: Undo purchases and restore team budgets  
-- **Category Tracking**: Monitor team composition in real-time
-- **Data Export**: Download comprehensive auction reports
-
-## 📁 Project Structure
+## � Project Structure
 
 ```
 cricket_potsdam/
-├── index.html                    # GitHub Pages landing page
-├── auction_web.html              # 🚀 Main universal auction app
-├── cricket_auction.py            # Legacy Python GUI version
-├── web_auction.py               # Legacy Flask server version
-├── demo_auction.py              # Console demo version
-├── test_auction.py              # Testing utilities
-├── requirements.txt             # Python dependencies (legacy)
-├── README.md                    # This documentation
-├── PROJECT_SUMMARY.md           # Technical project summary
-├── demos/                       # Demo and example files
-├── scripts/                     # Utility scripts
-├── archive/                     # Legacy code and backups
-└── templates/                   # Web development templates
+├── 📄 README.md                 # Main documentation
+├── 📄 LICENSE                   # MIT License
+├── 📄 requirements.txt          # Python dependencies
+├── 📄 .gitignore               # Git ignore rules
+├── 📁 src/                     # Source code
+│   ├── 📁 web/                 # Web application
+│   │   ├── auction_web.html    # Main auction app
+│   │   └── index.html          # Landing page
+│   └── 📁 python/              # Python applications
+│       └── cricket_auction.py  # GUI version
+├── 📁 scripts/                 # Utility scripts
+│   ├── server.py              # Local web server
+│   └── run_auction.bat        # Windows launcher
+├── 📁 tests/                   # Test files
+│   ├── test_auction.py        # Main tests
+│   └── simple_test.py         # Basic tests
+├── 📁 docs/                    # Documentation
+│   └── PROJECT_SUMMARY.md     # Technical details
+├── 📁 examples/                # Example configurations
+└── 📁 data/                    # Sample and demo data
+    └── auction_demo_*.json     # Demo auction results
 ```
 
 ## 🔧 Technical Details

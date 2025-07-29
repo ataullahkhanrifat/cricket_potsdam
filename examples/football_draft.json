@@ -1,0 +1,107 @@
+{
+  "title": "Premier League Fantasy Draft",
+  "description": "Football fantasy league auction",
+  "teams": [
+    {
+      "name": "Manchester United Fans",
+      "manager": "Alex",
+      "budget": 5000
+    },
+    {
+      "name": "Arsenal Supporters",
+      "manager": "Sarah",
+      "budget": 5000
+    },
+    {
+      "name": "Chelsea Blues",
+      "manager": "Mike",
+      "budget": 5000
+    },
+    {
+      "name": "Liverpool Reds",
+      "manager": "Emma",
+      "budget": 5000
+    },
+    {
+      "name": "City Citizens",
+      "manager": "John",
+      "budget": 5000
+    },
+    {
+      "name": "Tottenham Spurs",
+      "manager": "David",
+      "budget": 5000
+    }
+  ],
+  "categories": {
+    "STRIKER": {
+      "max_per_team": 2,
+      "description": "Forward players"
+    },
+    "MIDFIELDER": {
+      "max_per_team": 4,
+      "description": "Midfield players"
+    },
+    "DEFENDER": {
+      "max_per_team": 4,
+      "description": "Defensive players"
+    },
+    "GOALKEEPER": {
+      "max_per_team": 1,
+      "description": "Goalkeepers"
+    }
+  },
+  "players": {
+    "STRIKER": [
+      {"name": "Erling Haaland", "base_price": 500},
+      {"name": "Harry Kane", "base_price": 450},
+      {"name": "Mohamed Salah", "base_price": 420},
+      {"name": "Marcus Rashford", "base_price": 380},
+      {"name": "Gabriel Jesus", "base_price": 350},
+      {"name": "Darwin Núñez", "base_price": 320},
+      {"name": "Ollie Watkins", "base_price": 280},
+      {"name": "Ivan Toney", "base_price": 250},
+      {"name": "Callum Wilson", "base_price": 220},
+      {"name": "Alexander Isak", "base_price": 200}
+    ],
+    "MIDFIELDER": [
+      {"name": "Kevin De Bruyne", "base_price": 480},
+      {"name": "Bruno Fernandes", "base_price": 420},
+      {"name": "Martin Ødegaard", "base_price": 380},
+      {"name": "Bukayo Saka", "base_price": 350},
+      {"name": "Mason Mount", "base_price": 320},
+      {"name": "Declan Rice", "base_price": 300},
+      {"name": "James Maddison", "base_price": 280},
+      {"name": "Phil Foden", "base_price": 300},
+      {"name": "Bernardo Silva", "base_price": 280},
+      {"name": "Jack Grealish", "base_price": 260}
+    ],
+    "DEFENDER": [
+      {"name": "Virgil van Dijk", "base_price": 400},
+      {"name": "Rúben Dias", "base_price": 380},
+      {"name": "William Saliba", "base_price": 320},
+      {"name": "Reece James", "base_price": 300},
+      {"name": "Luke Shaw", "base_price": 280},
+      {"name": "Ben White", "base_price": 260},
+      {"name": "Josko Gvardiol", "base_price": 250},
+      {"name": "Lisandro Martínez", "base_price": 240},
+      {"name": "Kieran Trippier", "base_price": 220},
+      {"name": "Andrew Robertson", "base_price": 250}
+    ],
+    "GOALKEEPER": [
+      {"name": "Alisson Becker", "base_price": 300},
+      {"name": "Ederson", "base_price": 280},
+      {"name": "Aaron Ramsdale", "base_price": 250},
+      {"name": "André Onana", "base_price": 220},
+      {"name": "Jordan Pickford", "base_price": 200},
+      {"name": "Nick Pope", "base_price": 180}
+    ]
+  },
+  "rules": {
+    "bid_increment": 25,
+    "currency": "GBP",
+    "max_players_per_team": 11,
+    "base_price_purchase": true,
+    "unsold_re_auction": true
+  }
+}

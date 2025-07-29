@@ -1,0 +1,67 @@
+{
+  "title": "Cricket Tournament Auction",
+  "description": "Traditional cricket auction setup",
+  "teams": [
+    {
+      "name": "Patronus Voyagers",
+      "manager": "Imtiaz",
+      "budget": 2000
+    },
+    {
+      "name": "Alpha Knight", 
+      "manager": "Ifthekhar",
+      "budget": 2000
+    },
+    {
+      "name": "X-Mafias Return",
+      "manager": "Mahfuz", 
+      "budget": 2000
+    }
+  ],
+  "categories": {
+    "TIGER": {
+      "max_per_team": 4,
+      "description": "Premium players"
+    },
+    "LION": {
+      "max_per_team": 3,
+      "description": "Standard players"
+    },
+    "MANAGER": {
+      "max_per_team": 1,
+      "description": "Team manager as player"
+    }
+  },
+  "players": {
+    "TIGER": [
+      {"name": "Shanto", "base_price": 150},
+      {"name": "Tanzim", "base_price": 150},
+      {"name": "Pranto", "base_price": 150},
+      {"name": "Oni", "base_price": 120},
+      {"name": "Rifat", "base_price": 120},
+      {"name": "Naim", "base_price": 120},
+      {"name": "Nahid", "base_price": 120},
+      {"name": "Sony", "base_price": 100},
+      {"name": "Sufiyan", "base_price": 100},
+      {"name": "Samit", "base_price": 100},
+      {"name": "Shanto Berlin", "base_price": 100}
+    ],
+    "LION": [
+      {"name": "Akash", "base_price": 80},
+      {"name": "Amamul", "base_price": 80},
+      {"name": "Tanveer", "base_price": 80},
+      {"name": "Raisul", "base_price": 80},
+      {"name": "Ankon", "base_price": 80},
+      {"name": "Shahriar", "base_price": 80},
+      {"name": "Dip", "base_price": 80},
+      {"name": "Ejaz", "base_price": 80}
+    ]
+  },
+  "rules": {
+    "bid_increment": 10,
+    "currency": "EUR",
+    "max_players_per_team": 7,
+    "base_price_purchase": true,
+    "unsold_re_auction": true
+  }
+}

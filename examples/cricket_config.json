@@ -1,0 +1,127 @@
+{
+  "title": "Cricket Potsdam Championship 2025",
+  "total_budget": 2000,
+  "bid_increment": 10,
+  "max_players": 7,
+  "teams": [
+    {
+      "team_name": "Patronus Voyagers",
+      "manager_name": "Imtiaz"
+    },
+    {
+      "team_name": "Alpha Knight",
+      "manager_name": "Ifthekhar"
+    },
+    {
+      "team_name": "X-Mafias Return",
+      "manager_name": "Mahfuz"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Tigers",
+      "max_per_team": 4
+    },
+    {
+      "name": "Lions",
+      "max_per_team": 3
+    }
+  ],
+  "players": [
+    {
+      "name": "Shanto",
+      "category": "Tigers",
+      "price": 150
+    },
+    {
+      "name": "Tanzim",
+      "category": "Tigers",
+      "price": 150
+    },
+    {
+      "name": "Pranto",
+      "category": "Tigers",
+      "price": 150
+    },
+    {
+      "name": "Oni",
+      "category": "Tigers",
+      "price": 120
+    },
+    {
+      "name": "Rifat",
+      "category": "Tigers",
+      "price": 120
+    },
+    {
+      "name": "Naim",
+      "category": "Tigers",
+      "price": 120
+    },
+    {
+      "name": "Nahid",
+      "category": "Tigers",
+      "price": 120
+    },
+    {
+      "name": "Sony",
+      "category": "Tigers",
+      "price": 100
+    },
+    {
+      "name": "Sufiyan",
+      "category": "Tigers",
+      "price": 100
+    },
+    {
+      "name": "Samit",
+      "category": "Tigers",
+      "price": 100
+    },
+    {
+      "name": "Shanto Berlin",
+      "category": "Tigers",
+      "price": 100
+    },
+    {
+      "name": "Akash",
+      "category": "Lions",
+      "price": 80
+    },
+    {
+      "name": "Amamul",
+      "category": "Lions",
+      "price": 80
+    },
+    {
+      "name": "Tanveer",
+      "category": "Lions",
+      "price": 80
+    },
+    {
+      "name": "Raisul",
+      "category": "Lions",
+      "price": 80
+    },
+    {
+      "name": "Ankon",
+      "category": "Lions",
+      "price": 80
+    },
+    {
+      "name": "Shahriar",
+      "category": "Lions",
+      "price": 80
+    },
+    {
+      "name": "Dip",
+      "category": "Lions",
+      "price": 80
+    },
+    {
+      "name": "Ejaz",
+      "category": "Lions",
+      "price": 80
+    }
+  ]
+}
