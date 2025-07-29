@@ -1,6 +1,6 @@
 # Universal Sports Auction Platform
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![Live Demo](https://img.shields.io/badge/demo-live-green.svg)](https://ataullahkhanrifat.github.io/cricket_potsdam/)
 
@@ -159,7 +159,9 @@ This is an open-source project perfect for:
 
 ## 📄 License
 
-Open source - feel free to use, modify, and distribute for any purpose.
+**Proprietary License** - All rights reserved. This software is protected by copyright law. 
+Unauthorized copying, distribution, or modification is strictly prohibited. 
+See [LICENSE](LICENSE) file for detailed terms and conditions.
 
 ---
 
