@@ -2,12 +2,12 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
-[![Live Demo](https://img.shields.io/badge/demo-live-green.svg)](https://ataullahkhanrifat.github.io/cricket_potsdam/src/web/auction_web.html)
+[![Live Demo](https://img.shields.io/badge/demo-live-green.svg)](https://ataullahkhanrifat.github.io/cricket_potsdam/)
 
 A modern, configurable sports auction application that can be adapted for any sport or event. Originally developed for Cricket Potsdam, now evolved into a universal platform with professional UI/UX design.
 
 ## 🌐 Live Demo
-**Try it now**: https://ataullahkhanrifat.github.io/cricket_potsdam/src/web/auction_web.html
+**Try it now**: https://ataullahkhanrifat.github.io/cricket_potsdam/
 
 ## 🚀 Quick Start
 
@@ -166,5 +166,5 @@ Open source - feel free to use, modify, and distribute for any purpose.
 **🏆 From Cricket Potsdam to Universal Sports Auction Platform**  
 *Professional auction management with modern design and universal flexibility*
 
-**Live Demo**: https://ataullahkhanrifat.github.io/cricket_potsdam/src/web/auction_web.html  
+**Live Demo**: https://ataullahkhanrifat.github.io/cricket_potsdam/  
 **Version**: 3.0 | **Last Updated**: July 2025
