@@ -49,7 +49,6 @@ cricket_potsdam/
 │   └── simple_test.py         # Basic tests
 ├── 📁 docs/                    # Documentation
 │   └── PROJECT_SUMMARY.md     # Technical details
-├── 📁 examples/                # Example configurations
 └── 📁 data/                    # Sample and demo data
     └── auction_demo_*.json     # Demo auction results
 ```
@@ -76,22 +75,7 @@ cricket_potsdam/
 - **Local Storage**: For saving auction progress
 - **No Plugins**: Works without additional software
 
-## 🎯 Example Configurations
 
-### 🏏 Cricket Tournament
-- **Teams**: 4 teams, €2000 budget
-- **Categories**: Batsman (max 4), Bowler (max 3), All-rounder (max 2)
-- **Players**: 50+ players with base prices €50-€200
-
-### ⚽ Football Draft  
-- **Teams**: 6 teams, €5000 budget
-- **Categories**: Striker (max 2), Midfielder (max 4), Defender (max 4), Goalkeeper (max 1)
-- **Players**: 100+ players with base prices €100-€500
-
-### 🎮 Gaming Tournament
-- **Teams**: 8 teams, €1000 budget
-- **Categories**: DPS (max 2), Tank (max 1), Support (max 2)
-- **Players**: Custom roster with skill-based pricing
 
 ## 🛡️ Data & Privacy
 
