@@ -314,6 +314,14 @@
             font-size: 1.25rem;
         }
 
+        .available-budget {
+            color: var(--accent-blue);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
         .category-count {
             color: var(--text-secondary);
             font-size: 0.9rem;
@@ -710,6 +718,111 @@
         .hidden {
             display: none !important;
         }
+
+        /* Remaining Players Table */
+        .remaining-players-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            margin: 24px 0;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .remaining-players-section h3 {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .remaining-players-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .remaining-players-table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .remaining-players-table th,
+        .remaining-players-table td {
+            border: 1px solid var(--border-color);
+            padding: 12px 8px;
+            text-align: left;
+            width: 33.33%;
+        }
+
+        .remaining-players-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--card-bg);
+        }
+
+        .remaining-players-table th {
+            background: var(--card-bg);
+            color: var(--accent-gold);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--accent-gold);
+        }
+
+        .remaining-players-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .remaining-players-table tr:hover {
+            background: var(--hover-bg);
+        }
+
+        .remaining-players-table td:nth-child(2) {
+            color: var(--accent-orange);
+            font-weight: 500;
+        }
+
+        .remaining-players-table td:nth-child(3) {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .remaining-players-count {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .remaining-players-section {
+                padding: 16px;
+                margin: 16px 0;
+            }
+
+            .remaining-players-table-container {
+                max-height: 300px;
+            }
+
+            .remaining-players-table th,
+            .remaining-players-table td {
+                padding: 8px 6px;
+                font-size: 0.85rem;
+            }
+        }
     </style>
 </head>
 
@@ -785,14 +898,15 @@
                         <input type="text" id="player-name" placeholder="Enter player name" />
                     </div>
                     <div class="config-item">
-                        <label for="player-price">Base Price (€):</label>
-                        <input type="number" id="player-price" placeholder="50" min="10" max="1000" />
-                    </div>
-                    <div class="config-item">
                         <label for="player-category">Category:</label>
-                        <select id="player-category">
+                        <select id="player-category" onchange="updatePlayerPrice()">
                             <option value="">Select category</option>
                         </select>
+                    </div>
+                    <div class="config-item">
+                        <label for="player-price">Base Price (€):</label>
+                        <input type="number" id="player-price" placeholder="Auto-filled from category" readonly
+                            style="background-color: rgba(255,255,255,0.05); cursor: not-allowed;" />
                     </div>
                 </div>
 
@@ -856,7 +970,8 @@
         highestBidder: null,
         biddingActive: false,
         managers: {},
-        unsoldPlayers: []
+        unsoldPlayers: [],
+        temporaryBids: {} // Track temporary bids for all managers
     };
 
     // Setup Phase Functions
@@ -898,8 +1013,16 @@
                         <input type="text" id="category-${i}-name" placeholder="e.g., Premium, Standard" onchange="updatePlayerCategoryDropdown()" onkeyup="updatePlayerCategoryDropdown()" />
                     </div>
                     <div class="config-item">
+                        <label for="category-${i}-min">Min per Team:</label>
+                        <input type="number" id="category-${i}-min" value="1" min="0" max="10" />
+                    </div>
+                    <div class="config-item">
                         <label for="category-${i}-max">Max per Team:</label>
                         <input type="number" id="category-${i}-max" value="3" min="1" max="10" />
+                    </div>
+                    <div class="config-item">
+                        <label for="category-${i}-price">Base Price (€):</label>
+                        <input type="number" id="category-${i}-price" placeholder="50" min="10" max="1000" value="50" onchange="updatePlayerCategoryDropdown()" />
                     </div>
                 `;
         }
@@ -920,7 +1043,23 @@
         for (let i = 1; i <= numCategories; i++) {
             const categoryInput = document.getElementById(`category-${i}-name`);
             const categoryName = categoryInput?.value.trim() || `Category ${i}`;
-            categorySelect.innerHTML += `<option value="${categoryName}">${categoryName}</option>`;
+            const categoryPrice = document.getElementById(`category-${i}-price`)?.value || '50';
+            categorySelect.innerHTML += `<option value="${categoryName}" data-price="${categoryPrice}">${categoryName} (€${categoryPrice})</option>`;
+        }
+
+        // Clear the price field when categories are updated
+        document.getElementById('player-price').value = '';
+    }
+
+    function updatePlayerPrice() {
+        const categorySelect = document.getElementById('player-category');
+        const priceInput = document.getElementById('player-price');
+        const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+
+        if (selectedOption && selectedOption.dataset.price) {
+            priceInput.value = selectedOption.dataset.price;
+        } else {
+            priceInput.value = '';
         }
     }
 
@@ -934,13 +1073,13 @@
             return;
         }
 
-        if (!price || price < 10) {
-            alert('Please enter a valid price (minimum €10).');
+        if (!category) {
+            alert('Please select a category first.');
             return;
         }
 
-        if (!category) {
-            alert('Please select a category.');
+        if (!price || price < 10) {
+            alert('Invalid base price. Please select a valid category with a base price.');
             return;
         }
 
@@ -1021,14 +1160,42 @@
         auctionConfig.categories = [];
         for (let i = 1; i <= numCategories; i++) {
             const categoryName = document.getElementById(`category-${i}-name`).value.trim();
+            const minPerTeam = parseInt(document.getElementById(`category-${i}-min`).value);
             const maxPerTeam = parseInt(document.getElementById(`category-${i}-max`).value);
+            const basePrice = parseInt(document.getElementById(`category-${i}-price`).value);
 
             if (!categoryName) {
                 alert(`Please fill in all category names.`);
                 return;
             }
 
-            auctionConfig.categories.push({ name: categoryName, maxPerTeam });
+            if (minPerTeam > maxPerTeam) {
+                alert(`Category "${categoryName}": Minimum per team (${minPerTeam}) cannot be greater than maximum per team (${maxPerTeam}).`);
+                return;
+            }
+
+            auctionConfig.categories.push({ 
+                name: categoryName, 
+                minPerTeam: minPerTeam,
+                maxPerTeam: maxPerTeam,
+                basePrice: basePrice
+            });
+        }
+
+        // Validate configuration feasibility
+        const totalMinRequired = auctionConfig.categories.reduce((sum, cat) => sum + cat.minPerTeam, 0);
+        if (totalMinRequired > maxPlayers) {
+            const categoryDetails = auctionConfig.categories.map(cat => `${cat.name}: ${cat.minPerTeam} min`).join(', ');
+            alert(`Configuration Error!\n\nTotal minimum players required (${totalMinRequired}) exceeds maximum players per team (${maxPlayers}).\n\nCategory minimums: ${categoryDetails}\n\nPlease reduce minimum requirements or increase max players per team.`);
+            return;
+        }
+
+        // Validate budget feasibility
+        const minimumBudgetNeeded = auctionConfig.categories.reduce((sum, cat) => sum + (cat.minPerTeam * cat.basePrice), 0);
+        if (minimumBudgetNeeded > budget) {
+            const categoryDetails = auctionConfig.categories.map(cat => `${cat.name}: ${cat.minPerTeam} × €${cat.basePrice} = €${cat.minPerTeam * cat.basePrice}`).join('\n');
+            alert(`Budget Error!\n\nMinimum budget needed for required players (€${minimumBudgetNeeded}) exceeds total budget (€${budget}).\n\nBreakdown:\n${categoryDetails}\n\nPlease increase budget or reduce minimum requirements/base prices.`);
+            return;
         }
 
         if (auctionConfig.players.length === 0) {
@@ -1119,9 +1286,34 @@
                 <div class="teams-container">
                     ${generateTeamsDisplay()}
                 </div>
+
+                <div class="remaining-players-section">
+                    <h3>📋 Players Remaining for Auction</h3>
+                    <div class="remaining-players-count" id="remaining-count">
+                        Loading player data...
+                    </div>
+                    <div class="remaining-players-table-container">
+                        <table class="remaining-players-table" id="remaining-players-table">
+                            <thead>
+                                <tr>
+                                    <th>Player Name</th>
+                                    <th>Category</th>
+                                    <th>Base Price</th>
+                                </tr>
+                            </thead>
+                            <tbody id="remaining-players-body">
+                                <tr>
+                                    <td colspan="3" style="text-align: center; color: #999;">Loading players...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             `;
 
         updateDisplay();
+        updateButtonStates(); // Set initial button states
+        updateRemainingPlayersTable(); // Initialize remaining players table
     }
 
     function generateBidButtons() {
@@ -1145,6 +1337,7 @@
                     </div>
                     <div class="team-stats">
                         <div class="budget" id="budget-${team.managerName.toLowerCase().replace(/\s+/g, '-')}">€${auctionConfig.totalBudget} left</div>
+                        <div class="available-budget" id="available-budget-${team.managerName.toLowerCase().replace(/\s+/g, '-')}">Available after base requirements: €0</div>
                         <div class="category-count" id="stats-${team.managerName.toLowerCase().replace(/\s+/g, '-')}">Players: 0/${auctionConfig.maxPlayers}</div>
                     </div>
                     <div class="players-list" id="players-${team.managerName.toLowerCase().replace(/\s+/g, '-')}">
@@ -1166,7 +1359,16 @@
     function nextPlayer() {
         if (!auction.isSetupComplete) return;
 
+        // Prevent moving to next player if current bidding is active
+        if (auction.biddingActive && auction.currentPlayer) {
+            alert('⚠️ Please complete the current bidding first!\n\nYou must click one of these buttons:\n• SOLD! (if there are bids)\n• Buy at Base Price (for direct purchase)\n• UNSOLD (if no one wants the player)\n\nThen you can move to the next player.');
+            return;
+        }
+
         try {
+            // Clear temporary bids from previous player
+            auction.temporaryBids = {};
+
             let currentPlayer = null;
 
             // First prioritize regular players from the main pool
@@ -1189,10 +1391,123 @@
             auction.biddingActive = true;
 
             updateDisplay();
+            updateButtonStates(); // Update button states when new player starts
         } catch (error) {
             console.error('Error in nextPlayer:', error);
             alert('Error selecting next player. Please try again.');
         }
+    }
+
+    // New function: Update button states based on auction status
+    function updateButtonStates() {
+        const nextBtn = document.querySelector('button[onclick="nextPlayer()"]');
+        const sellBtn = document.getElementById('sell-btn');
+        const basePriceBtn = document.getElementById('base-price-btn');
+        const unsoldBtn = document.getElementById('unsold-btn');
+
+        if (auction.biddingActive && auction.currentPlayer) {
+            // During active bidding: disable Next Player, enable action buttons
+            if (nextBtn) {
+                nextBtn.disabled = true;
+                nextBtn.style.opacity = '0.5';
+                nextBtn.style.cursor = 'not-allowed';
+                nextBtn.title = 'Complete current bidding first (SOLD/BASE PRICE/UNSOLD)';
+            }
+            
+            if (sellBtn) {
+                sellBtn.disabled = false;
+                sellBtn.style.opacity = '1';
+                sellBtn.style.cursor = 'pointer';
+            }
+            
+            if (basePriceBtn) {
+                basePriceBtn.disabled = false;
+                basePriceBtn.style.opacity = '1';
+                basePriceBtn.style.cursor = 'pointer';
+            }
+            
+            if (unsoldBtn) {
+                unsoldBtn.disabled = false;
+                unsoldBtn.style.opacity = '1';
+                unsoldBtn.style.cursor = 'pointer';
+            }
+        } else {
+            // When no active bidding: enable Next Player, disable action buttons
+            if (nextBtn) {
+                nextBtn.disabled = false;
+                nextBtn.style.opacity = '1';
+                nextBtn.style.cursor = 'pointer';
+                nextBtn.title = 'Move to next player';
+            }
+            
+            if (sellBtn) {
+                sellBtn.disabled = true;
+                sellBtn.style.opacity = '0.5';
+                sellBtn.style.cursor = 'not-allowed';
+            }
+            
+            if (basePriceBtn) {
+                basePriceBtn.disabled = true;
+                basePriceBtn.style.opacity = '0.5';
+                basePriceBtn.style.cursor = 'not-allowed';
+            }
+            
+            if (unsoldBtn) {
+                unsoldBtn.disabled = true;
+                unsoldBtn.style.opacity = '0.5';
+                unsoldBtn.style.cursor = 'not-allowed';
+            }
+        }
+    }
+
+    // New function: Update remaining players table
+    function updateRemainingPlayersTable() {
+        const tbody = document.getElementById('remaining-players-body');
+        const countEl = document.getElementById('remaining-count');
+        
+        if (!tbody || !countEl) return;
+
+        // Combine all remaining players (playerPool + unsoldPlayers)
+        const allRemainingPlayers = [...auction.playerPool, ...auction.unsoldPlayers];
+        
+        // Update count display
+        const totalRemaining = allRemainingPlayers.length;
+        const unsoldCount = auction.unsoldPlayers.length;
+        
+        if (totalRemaining === 0) {
+            countEl.textContent = '🎉 All players have been processed!';
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #999;">No players remaining</td></tr>';
+            return;
+        }
+
+        let countText = `Total Remaining: ${totalRemaining} players`;
+        if (unsoldCount > 0) {
+            countText += ` (${unsoldCount} unsold, ${totalRemaining - unsoldCount} not yet auctioned)`;
+        }
+        countEl.textContent = countText;
+
+        // Sort players by category then by name for better organization
+        allRemainingPlayers.sort((a, b) => {
+            if (a.category !== b.category) {
+                return a.category.localeCompare(b.category);
+            }
+            return a.name.localeCompare(b.name);
+        });
+
+        // Generate table rows
+        tbody.innerHTML = allRemainingPlayers.map(player => {
+            const isUnsold = auction.unsoldPlayers.includes(player);
+            const rowClass = isUnsold ? 'style="background-color: rgba(255, 193, 7, 0.1);"' : '';
+            const namePrefix = isUnsold ? '🔄 ' : '';
+            
+            return `
+                <tr ${rowClass}>
+                    <td>${namePrefix}${player.name}</td>
+                    <td>${player.category}</td>
+                    <td>€${player.price}</td>
+                </tr>
+            `;
+        }).join('');
     }
 
     function placeBid(manager) {
@@ -1203,12 +1518,40 @@
 
         const newBid = auction.currentBid + auctionConfig.bidIncrement;
 
-        if (canManagerBid(managerData, newBid, auction.currentPlayer.category)) {
-            auction.currentBid = newBid;
-            auction.highestBidder = manager;
-            updateDisplay();
-            console.log(`${manager} bid €${newBid} for ${auction.currentPlayer.name}`);
+        // Check if bid is allowed
+        if (newBid > managerData.budget) {
+            alert(`${manager}: Insufficient budget! You have €${managerData.budget} left.`);
+            return;
         }
+
+        if (managerData.players.length >= auctionConfig.maxPlayers) {
+            alert(`${manager}: Team is full! Maximum ${auctionConfig.maxPlayers} players allowed.`);
+            return;
+        }
+
+        const categoryConfig = auctionConfig.categories.find(cat => cat.name === auction.currentPlayer.category);
+        if (categoryConfig && managerData.categoryCounts[auction.currentPlayer.category] >= categoryConfig.maxPerTeam) {
+            alert(`${manager}: Category limit reached! Maximum ${categoryConfig.maxPerTeam} ${auction.currentPlayer.category} players allowed.`);
+            return;
+        }
+
+        // New: Check budget reserve
+        if (!canManagerAffordBid(managerData, newBid, auction.currentPlayer.category)) {
+            const requirements = getRequiredPlayersAndBudget(managerData);
+            const budgetAfterBid = managerData.budget - newBid;
+            alert(`${manager}: Insufficient budget to complete required players!\n\nAfter this bid you'd have €${budgetAfterBid} left.\nBut you need at least €${requirements.minimumBudgetRequired} to buy remaining required players.\n\nRequired players breakdown:\n${requirements.categoryBreakdown.map(cat => `${cat.name}: ${cat.stillNeeded} more needed (min ${cat.minRequired}, current ${cat.current})`).filter(line => line.includes('more needed')).join('\n')}`);
+            return;
+        }
+
+        // Bid is valid, proceed
+        auction.currentBid = newBid;
+        auction.highestBidder = manager;
+
+        // Track this manager's temporary bid
+        auction.temporaryBids[manager] = newBid;
+
+        updateDisplay();
+        console.log(`${manager} bid €${newBid} for ${auction.currentPlayer.name}`);
     }
 
     function canManagerBid(manager, amount, category) {
@@ -1219,11 +1562,195 @@
         const categoryConfig = auctionConfig.categories.find(cat => cat.name === category);
         if (categoryConfig && manager.categoryCounts[category] >= categoryConfig.maxPerTeam) return false;
 
+        // New: Check budget reserve for required players
+        if (!canManagerAffordBid(manager, amount, category)) return false;
+
         return true;
     }
 
+    // New function: Calculate minimum required players and budget reserve
+    function getRequiredPlayersAndBudget(manager) {
+        let requiredPlayers = [];
+        let totalMinRequired = 0;
+
+        // Calculate minimum players still needed per category
+        auctionConfig.categories.forEach(cat => {
+            const currentCount = manager.categoryCounts[cat.name] || 0;
+            const minNeeded = Math.max(0, cat.minPerTeam - currentCount);
+            
+            for (let i = 0; i < minNeeded; i++) {
+                requiredPlayers.push({ category: cat.name, basePrice: cat.basePrice });
+                totalMinRequired++;
+            }
+        });
+
+        // Calculate total players still needed to reach maxPlayers
+        const currentPlayerCount = manager.players.length;
+        const totalPlayersNeeded = auctionConfig.maxPlayers - currentPlayerCount;
+        
+        // If we need more players beyond minimum category requirements
+        const additionalPlayersNeeded = Math.max(0, totalPlayersNeeded - totalMinRequired);
+        
+        // For additional players, assume lowest base price available
+        const lowestBasePrice = Math.min(...auctionConfig.categories.map(cat => cat.basePrice));
+        for (let i = 0; i < additionalPlayersNeeded; i++) {
+            requiredPlayers.push({ category: 'additional', basePrice: lowestBasePrice });
+        }
+
+        // Calculate minimum budget needed
+        const minimumBudgetRequired = requiredPlayers.reduce((sum, player) => sum + player.basePrice, 0);
+
+        return {
+            requiredPlayers,
+            minimumBudgetRequired,
+            totalPlayersNeeded,
+            categoryBreakdown: auctionConfig.categories.map(cat => ({
+                name: cat.name,
+                current: manager.categoryCounts[cat.name] || 0,
+                minRequired: cat.minPerTeam,
+                stillNeeded: Math.max(0, cat.minPerTeam - (manager.categoryCounts[cat.name] || 0))
+            }))
+        };
+    }
+
+    // New function: Check if manager can afford a bid while maintaining budget reserve
+    function canManagerAffordBid(manager, bidAmount, category) {
+        const requirements = getRequiredPlayersAndBudget(manager);
+        const budgetAfterBid = manager.budget - bidAmount;
+        
+        // If this bid fulfills a minimum category requirement, 
+        // we need to recalculate requirements assuming this player is bought
+        let adjustedRequirements = { ...requirements };
+        const categoryConfig = auctionConfig.categories.find(cat => cat.name === category);
+        
+        if (categoryConfig) {
+            const currentCategoryCount = manager.categoryCounts[category] || 0;
+            if (currentCategoryCount < categoryConfig.minPerTeam) {
+                // This bid would help fulfill minimum requirement
+                adjustedRequirements.minimumBudgetRequired -= categoryConfig.basePrice;
+                adjustedRequirements.minimumBudgetRequired = Math.max(0, adjustedRequirements.minimumBudgetRequired);
+            }
+        }
+
+        return budgetAfterBid >= adjustedRequirements.minimumBudgetRequired;
+    }
+
+    // New function: Check if manager can pass on a player (minimum category enforcement)
+    function canManagerPassOnPlayer(manager, playerCategory) {
+        const categoryConfig = auctionConfig.categories.find(cat => cat.name === playerCategory);
+        if (!categoryConfig) return true; // Unknown category, allow pass
+        
+        const currentCount = manager.categoryCounts[playerCategory] || 0;
+        
+        // If minimum requirement not met, cannot pass
+        if (currentCount < categoryConfig.minPerTeam) {
+            // Check if there are enough players of this category remaining to fulfill minimum later
+            const remainingPlayersInCategory = auction.playerPool.filter(p => p.category === playerCategory).length +
+                                             auction.unsoldPlayers.filter(p => p.category === playerCategory).length;
+            
+            const stillNeeded = categoryConfig.minPerTeam - currentCount - 1; // -1 because we're considering passing this one
+            
+            if (remainingPlayersInCategory < stillNeeded) {
+                return false; // Cannot pass - not enough players left to fulfill minimum
+            }
+        }
+        
+        return true; // Can pass
+    }
+
+    // New function: Calculate available budget after fulfilling minimum base price requirements
+    function getAvailableBudgetAfterRequirements(manager) {
+        // Calculate minimum required spending for all mandatory categories
+        let minimumRequiredSpending = 0;
+        
+        auctionConfig.categories.forEach(cat => {
+            const currentCount = manager.categoryCounts[cat.name] || 0;
+            const stillNeeded = Math.max(0, cat.minPerTeam - currentCount);
+            minimumRequiredSpending += stillNeeded * cat.basePrice;
+        });
+
+        // Calculate remaining players needed to reach maxPlayers
+        const currentPlayerCount = manager.players.length;
+        const remainingPlayersNeeded = Math.max(0, auctionConfig.maxPlayers - currentPlayerCount);
+        
+        // Subtract already accounted minimum category players
+        const minimumCategoryPlayersStillNeeded = auctionConfig.categories.reduce((sum, cat) => {
+            const currentCount = manager.categoryCounts[cat.name] || 0;
+            return sum + Math.max(0, cat.minPerTeam - currentCount);
+        }, 0);
+        
+        const additionalPlayersNeeded = Math.max(0, remainingPlayersNeeded - minimumCategoryPlayersStillNeeded);
+        
+        // For additional players, assume lowest base price
+        if (additionalPlayersNeeded > 0) {
+            const lowestBasePrice = Math.min(...auctionConfig.categories.map(cat => cat.basePrice));
+            minimumRequiredSpending += additionalPlayersNeeded * lowestBasePrice;
+        }
+
+        return manager.budget - minimumRequiredSpending;
+    }
+
+    function getDisplayBudget(manager) {
+        // If this manager has a temporary bid, show budget minus their bid
+        if (auction.currentPlayer && auction.temporaryBids[manager.name] && auction.biddingActive) {
+            return manager.budget - auction.temporaryBids[manager.name];
+        }
+        // Otherwise show actual budget
+        return manager.budget;
+    }
+
+    function getManagerBidStatus(manager) {
+        if (!auction.currentPlayer || !auction.biddingActive) {
+            return { isHighestBidder: false, hasBid: false, bidAmount: 0 };
+        }
+
+        const hasBid = auction.temporaryBids[manager.name] > 0;
+        const isHighestBidder = auction.highestBidder === manager.name;
+        const bidAmount = auction.temporaryBids[manager.name] || 0;
+
+        return { isHighestBidder, hasBid, bidAmount };
+    }
+
     function passBid(manager) {
-        console.log(`${manager} passed on ${auction.currentPlayer ? auction.currentPlayer.name : 'current player'}`);
+        if (!auction.biddingActive || !auction.currentPlayer) return;
+
+        const managerData = auction.managers[manager];
+        if (!managerData) return;
+
+        // New: Check if manager can pass on this player (minimum category enforcement)
+        if (!canManagerPassOnPlayer(managerData, auction.currentPlayer.category)) {
+            const categoryConfig = auctionConfig.categories.find(cat => cat.name === auction.currentPlayer.category);
+            const currentCount = managerData.categoryCounts[auction.currentPlayer.category] || 0;
+            const stillNeeded = categoryConfig.minPerTeam - currentCount;
+            
+            alert(`${manager}: Cannot pass! You need at least ${stillNeeded} more ${auction.currentPlayer.category} player(s) to meet the minimum requirement of ${categoryConfig.minPerTeam} per team.\n\nCurrent ${auction.currentPlayer.category} players: ${currentCount}\nMinimum required: ${categoryConfig.minPerTeam}`);
+            return;
+        }
+
+        // Remove this manager's temporary bid
+        if (auction.temporaryBids[manager]) {
+            delete auction.temporaryBids[manager];
+        }
+
+        // If this was the highest bidder, find the next highest bid
+        if (auction.highestBidder === manager) {
+            let newHighestBid = auction.currentPlayer.basePrice;
+            let newHighestBidder = null;
+
+            // Find the highest remaining bid
+            Object.entries(auction.temporaryBids).forEach(([managerName, bidAmount]) => {
+                if (bidAmount > newHighestBid) {
+                    newHighestBid = bidAmount;
+                    newHighestBidder = managerName;
+                }
+            });
+
+            auction.currentBid = newHighestBid;
+            auction.highestBidder = newHighestBidder;
+        }
+
+        updateDisplay();
+        console.log(`${manager} passed on ${auction.currentPlayer.name}`);
     }
 
     function sellPlayer() {
@@ -1263,12 +1790,19 @@
         manager.players.push(player);
         manager.categoryCounts[player.category]++;
 
+        // Store winner name for alert before resetting
+        const winnerName = auction.highestBidder;
+        const finalPrice = auction.currentBid;
+
         // Reset auction state
         auction.currentPlayer = null;
+        auction.highestBidder = null;
         auction.biddingActive = false;
+        auction.temporaryBids = {}; // Clear temporary bids
 
         updateDisplay();
-        alert(`🎉 ${player.name} sold to ${auction.highestBidder} for €${auction.currentBid}!`);
+        updateButtonStates(); // Update button states after sale
+        alert(`🎉 ${player.name} sold to ${winnerName} for €${finalPrice}!`);
     }
 
     function buyAtBasePrice() {
@@ -1310,9 +1844,12 @@
         const playerName = auction.currentPlayer.name;
 
         auction.currentPlayer = null;
+        auction.highestBidder = null;
         auction.biddingActive = false;
+        auction.temporaryBids = {}; // Clear temporary bids
 
         updateDisplay();
+        updateButtonStates(); // Update button states after marking unsold
         alert(`${playerName} will be re-auctioned later!`);
     }
 
@@ -1423,6 +1960,7 @@ Total Budget Used: €${Object.values(auction.managers).reduce((sum, m) => sum +
             }
 
             updateTeams();
+            updateRemainingPlayersTable(); // Update remaining players table
         } catch (error) {
             console.error('Error updating display:', error);
         }
@@ -1462,17 +2000,71 @@ Total Budget Used: €${Object.values(auction.managers).reduce((sum, m) => sum +
             const managerId = manager.name.toLowerCase().replace(/\s+/g, '-');
 
             const budgetEl = document.getElementById(`budget-${managerId}`);
+            const availableBudgetEl = document.getElementById(`available-budget-${managerId}`);
             const statsEl = document.getElementById(`stats-${managerId}`);
             const playersEl = document.getElementById(`players-${managerId}`);
 
-            if (budgetEl) budgetEl.textContent = `€${manager.budget} left`;
+            if (budgetEl) {
+                const displayBudget = getDisplayBudget(manager);
+                const bidStatus = getManagerBidStatus(manager);
+
+                if (bidStatus.isHighestBidder) {
+                    // Highest bidder - highlight in orange with indicator
+                    budgetEl.innerHTML = `€${displayBudget} left <span style="color: var(--accent-orange); font-size: 0.9em; font-weight: 600;">(bidding €${bidStatus.bidAmount})</span>`;
+                    budgetEl.style.color = 'var(--accent-orange)';
+                    budgetEl.style.fontWeight = '600';
+                } else if (bidStatus.hasBid) {
+                    // Has bid but not highest - show deducted amount in muted style
+                    budgetEl.innerHTML = `€${displayBudget} left <span style="color: var(--text-secondary); font-size: 0.85em;">(bid €${bidStatus.bidAmount})</span>`;
+                    budgetEl.style.color = 'var(--text-secondary)';
+                    budgetEl.style.fontWeight = '500';
+                } else {
+                    // No bid - normal display
+                    budgetEl.textContent = `€${displayBudget} left`;
+                    budgetEl.style.color = 'var(--text-primary)';
+                    budgetEl.style.fontWeight = '400';
+                }
+            }
+
+            // Update available budget after requirements
+            if (availableBudgetEl) {
+                const availableBudget = getAvailableBudgetAfterRequirements(manager);
+                availableBudgetEl.textContent = `Available after base requirements: €${availableBudget}`;
+                
+                // Color coding based on available budget
+                if (availableBudget < 0) {
+                    availableBudgetEl.style.color = 'var(--accent-red)';
+                    availableBudgetEl.style.fontWeight = '700';
+                } else if (availableBudget < 100) {
+                    availableBudgetEl.style.color = 'var(--accent-orange)';
+                    availableBudgetEl.style.fontWeight = '600';
+                } else {
+                    availableBudgetEl.style.color = 'var(--accent-blue)';
+                    availableBudgetEl.style.fontWeight = '600';
+                }
+            }
 
             if (statsEl) {
                 let statsText = `Players: ${manager.players.length}/${auctionConfig.maxPlayers}`;
+                let statsHtml = `<span>Players: ${manager.players.length}/${auctionConfig.maxPlayers}</span>`;
+                
                 auctionConfig.categories.forEach(cat => {
-                    statsText += ` | ${cat.name}: ${manager.categoryCounts[cat.name]}/${cat.maxPerTeam}`;
+                    const currentCount = manager.categoryCounts[cat.name] || 0;
+                    const minRequired = cat.minPerTeam || 0;
+                    const maxAllowed = cat.maxPerTeam || 0;
+                    
+                    // Color coding based on minimum requirements
+                    let color = 'var(--text-primary)'; // default
+                    if (currentCount < minRequired) {
+                        color = 'var(--accent-red)'; // red if below minimum
+                    } else if (currentCount >= minRequired && currentCount <= maxAllowed) {
+                        color = 'var(--accent-green)'; // green if within range
+                    }
+                    
+                    statsHtml += ` | <span style="color: ${color};">${cat.name}: ${currentCount}/${maxAllowed} (min: ${minRequired})</span>`;
                 });
-                statsEl.textContent = statsText;
+                
+                statsEl.innerHTML = statsHtml;
             }
 
             if (playersEl) {
