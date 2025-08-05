@@ -315,7 +315,7 @@
         }
 
         .available-budget {
-            color: var(--accent-blue);
+            color: var(--accent-gold);
             font-weight: 600;
             margin-bottom: 8px;
             font-size: 0.95rem;
@@ -770,16 +770,26 @@
             top: 0;
             z-index: 100;
             background: var(--card-bg);
+            backdrop-filter: blur(20px);
+        }
+
+        .remaining-players-table thead tr {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
         }
 
         .remaining-players-table th {
             background: var(--card-bg);
+            backdrop-filter: blur(20px);
             color: var(--accent-gold);
             font-weight: 600;
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             border-bottom: 2px solid var(--accent-gold);
+            position: sticky;
+            top: 0;
+            z-index: 101;
         }
 
         .remaining-players-table tr:nth-child(even) {
@@ -2039,7 +2049,7 @@ Total Budget Used: €${Object.values(auction.managers).reduce((sum, m) => sum +
                     availableBudgetEl.style.color = 'var(--accent-orange)';
                     availableBudgetEl.style.fontWeight = '600';
                 } else {
-                    availableBudgetEl.style.color = 'var(--accent-blue)';
+                    availableBudgetEl.style.color = 'var(--accent-gold)';
                     availableBudgetEl.style.fontWeight = '600';
                 }
             }
