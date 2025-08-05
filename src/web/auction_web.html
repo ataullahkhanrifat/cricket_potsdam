@@ -1184,8 +1184,8 @@
                 return;
             }
 
-            auctionConfig.categories.push({ 
-                name: categoryName, 
+            auctionConfig.categories.push({
+                name: categoryName,
                 minPerTeam: minPerTeam,
                 maxPerTeam: maxPerTeam,
                 basePrice: basePrice
@@ -1423,19 +1423,19 @@
                 nextBtn.style.cursor = 'not-allowed';
                 nextBtn.title = 'Complete current bidding first (SOLD/BASE PRICE/UNSOLD)';
             }
-            
+
             if (sellBtn) {
                 sellBtn.disabled = false;
                 sellBtn.style.opacity = '1';
                 sellBtn.style.cursor = 'pointer';
             }
-            
+
             if (basePriceBtn) {
                 basePriceBtn.disabled = false;
                 basePriceBtn.style.opacity = '1';
                 basePriceBtn.style.cursor = 'pointer';
             }
-            
+
             if (unsoldBtn) {
                 unsoldBtn.disabled = false;
                 unsoldBtn.style.opacity = '1';
@@ -1449,19 +1449,19 @@
                 nextBtn.style.cursor = 'pointer';
                 nextBtn.title = 'Move to next player';
             }
-            
+
             if (sellBtn) {
                 sellBtn.disabled = true;
                 sellBtn.style.opacity = '0.5';
                 sellBtn.style.cursor = 'not-allowed';
             }
-            
+
             if (basePriceBtn) {
                 basePriceBtn.disabled = true;
                 basePriceBtn.style.opacity = '0.5';
                 basePriceBtn.style.cursor = 'not-allowed';
             }
-            
+
             if (unsoldBtn) {
                 unsoldBtn.disabled = true;
                 unsoldBtn.style.opacity = '0.5';
@@ -1474,16 +1474,16 @@
     function updateRemainingPlayersTable() {
         const tbody = document.getElementById('remaining-players-body');
         const countEl = document.getElementById('remaining-count');
-        
+
         if (!tbody || !countEl) return;
 
         // Combine all remaining players (playerPool + unsoldPlayers)
         const allRemainingPlayers = [...auction.playerPool, ...auction.unsoldPlayers];
-        
+
         // Update count display
         const totalRemaining = allRemainingPlayers.length;
         const unsoldCount = auction.unsoldPlayers.length;
-        
+
         if (totalRemaining === 0) {
             countEl.textContent = '🎉 All players have been processed!';
             tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #999;">No players remaining</td></tr>';
@@ -1509,7 +1509,7 @@
             const isUnsold = auction.unsoldPlayers.includes(player);
             const rowClass = isUnsold ? 'style="background-color: rgba(255, 193, 7, 0.1);"' : '';
             const namePrefix = isUnsold ? '🔄 ' : '';
-            
+
             return `
                 <tr ${rowClass}>
                     <td>${namePrefix}${player.name}</td>
@@ -1587,7 +1587,7 @@
         auctionConfig.categories.forEach(cat => {
             const currentCount = manager.categoryCounts[cat.name] || 0;
             const minNeeded = Math.max(0, cat.minPerTeam - currentCount);
-            
+
             for (let i = 0; i < minNeeded; i++) {
                 requiredPlayers.push({ category: cat.name, basePrice: cat.basePrice });
                 totalMinRequired++;
@@ -1597,10 +1597,10 @@
         // Calculate total players still needed to reach maxPlayers
         const currentPlayerCount = manager.players.length;
         const totalPlayersNeeded = auctionConfig.maxPlayers - currentPlayerCount;
-        
+
         // If we need more players beyond minimum category requirements
         const additionalPlayersNeeded = Math.max(0, totalPlayersNeeded - totalMinRequired);
-        
+
         // For additional players, assume lowest base price available
         const lowestBasePrice = Math.min(...auctionConfig.categories.map(cat => cat.basePrice));
         for (let i = 0; i < additionalPlayersNeeded; i++) {
@@ -1625,46 +1625,64 @@
 
     // New function: Check if manager can afford a bid while maintaining budget reserve
     function canManagerAffordBid(manager, bidAmount, category) {
-        const requirements = getRequiredPlayersAndBudget(manager);
         const budgetAfterBid = manager.budget - bidAmount;
-        
-        // If this bid fulfills a minimum category requirement, 
-        // we need to recalculate requirements assuming this player is bought
-        let adjustedRequirements = { ...requirements };
-        const categoryConfig = auctionConfig.categories.find(cat => cat.name === category);
-        
-        if (categoryConfig) {
-            const currentCategoryCount = manager.categoryCounts[category] || 0;
-            if (currentCategoryCount < categoryConfig.minPerTeam) {
-                // This bid would help fulfill minimum requirement
-                adjustedRequirements.minimumBudgetRequired -= categoryConfig.basePrice;
-                adjustedRequirements.minimumBudgetRequired = Math.max(0, adjustedRequirements.minimumBudgetRequired);
-            }
+
+        // Calculate minimum budget needed for remaining required players
+        // after assuming this bid succeeds
+        let minimumBudgetNeeded = 0;
+
+        // Simulate having this player by temporarily updating counts
+        const tempCategoryCounts = { ...manager.categoryCounts };
+        tempCategoryCounts[category] = (tempCategoryCounts[category] || 0) + 1;
+
+        // Calculate remaining minimum requirements for each category
+        auctionConfig.categories.forEach(cat => {
+            const currentCount = tempCategoryCounts[cat.name] || 0;
+            const stillNeeded = Math.max(0, cat.minPerTeam - currentCount);
+            minimumBudgetNeeded += stillNeeded * cat.basePrice;
+        });
+
+        // Calculate additional players needed to reach maxPlayers
+        const currentPlayerCount = manager.players.length + 1; // +1 for this bid
+        const totalPlayersNeeded = auctionConfig.maxPlayers - currentPlayerCount;
+
+        // Subtract already calculated minimum category players
+        const minimumCategoryPlayersStillNeeded = auctionConfig.categories.reduce((sum, cat) => {
+            const currentCount = tempCategoryCounts[cat.name] || 0;
+            return sum + Math.max(0, cat.minPerTeam - currentCount);
+        }, 0);
+
+        const additionalPlayersNeeded = Math.max(0, totalPlayersNeeded - minimumCategoryPlayersStillNeeded);
+
+        // For additional players, use lowest base price
+        if (additionalPlayersNeeded > 0) {
+            const lowestBasePrice = Math.min(...auctionConfig.categories.map(cat => cat.basePrice));
+            minimumBudgetNeeded += additionalPlayersNeeded * lowestBasePrice;
         }
 
-        return budgetAfterBid >= adjustedRequirements.minimumBudgetRequired;
+        return budgetAfterBid >= minimumBudgetNeeded;
     }
 
     // New function: Check if manager can pass on a player (minimum category enforcement)
     function canManagerPassOnPlayer(manager, playerCategory) {
         const categoryConfig = auctionConfig.categories.find(cat => cat.name === playerCategory);
         if (!categoryConfig) return true; // Unknown category, allow pass
-        
+
         const currentCount = manager.categoryCounts[playerCategory] || 0;
-        
+
         // If minimum requirement not met, cannot pass
         if (currentCount < categoryConfig.minPerTeam) {
             // Check if there are enough players of this category remaining to fulfill minimum later
             const remainingPlayersInCategory = auction.playerPool.filter(p => p.category === playerCategory).length +
-                                             auction.unsoldPlayers.filter(p => p.category === playerCategory).length;
-            
+                auction.unsoldPlayers.filter(p => p.category === playerCategory).length;
+
             const stillNeeded = categoryConfig.minPerTeam - currentCount - 1; // -1 because we're considering passing this one
-            
+
             if (remainingPlayersInCategory < stillNeeded) {
                 return false; // Cannot pass - not enough players left to fulfill minimum
             }
         }
-        
+
         return true; // Can pass
     }
 
@@ -1672,7 +1690,7 @@
     function getAvailableBudgetAfterRequirements(manager) {
         // Calculate minimum required spending for all mandatory categories
         let minimumRequiredSpending = 0;
-        
+
         auctionConfig.categories.forEach(cat => {
             const currentCount = manager.categoryCounts[cat.name] || 0;
             const stillNeeded = Math.max(0, cat.minPerTeam - currentCount);
@@ -1682,15 +1700,15 @@
         // Calculate remaining players needed to reach maxPlayers
         const currentPlayerCount = manager.players.length;
         const remainingPlayersNeeded = Math.max(0, auctionConfig.maxPlayers - currentPlayerCount);
-        
+
         // Subtract already accounted minimum category players
         const minimumCategoryPlayersStillNeeded = auctionConfig.categories.reduce((sum, cat) => {
             const currentCount = manager.categoryCounts[cat.name] || 0;
             return sum + Math.max(0, cat.minPerTeam - currentCount);
         }, 0);
-        
+
         const additionalPlayersNeeded = Math.max(0, remainingPlayersNeeded - minimumCategoryPlayersStillNeeded);
-        
+
         // For additional players, assume lowest base price
         if (additionalPlayersNeeded > 0) {
             const lowestBasePrice = Math.min(...auctionConfig.categories.map(cat => cat.basePrice));
@@ -1732,7 +1750,7 @@
             const categoryConfig = auctionConfig.categories.find(cat => cat.name === auction.currentPlayer.category);
             const currentCount = managerData.categoryCounts[auction.currentPlayer.category] || 0;
             const stillNeeded = categoryConfig.minPerTeam - currentCount;
-            
+
             alert(`${manager}: Cannot pass! You need at least ${stillNeeded} more ${auction.currentPlayer.category} player(s) to meet the minimum requirement of ${categoryConfig.minPerTeam} per team.\n\nCurrent ${auction.currentPlayer.category} players: ${currentCount}\nMinimum required: ${categoryConfig.minPerTeam}`);
             return;
         }
@@ -2040,7 +2058,7 @@ Total Budget Used: €${Object.values(auction.managers).reduce((sum, m) => sum +
             if (availableBudgetEl) {
                 const availableBudget = getAvailableBudgetAfterRequirements(manager);
                 availableBudgetEl.textContent = `Available after base requirements: €${availableBudget}`;
-                
+
                 // Color coding based on available budget
                 if (availableBudget < 0) {
                     availableBudgetEl.style.color = 'var(--accent-red)';
@@ -2057,12 +2075,12 @@ Total Budget Used: €${Object.values(auction.managers).reduce((sum, m) => sum +
             if (statsEl) {
                 let statsText = `Players: ${manager.players.length}/${auctionConfig.maxPlayers}`;
                 let statsHtml = `<span>Players: ${manager.players.length}/${auctionConfig.maxPlayers}</span>`;
-                
+
                 auctionConfig.categories.forEach(cat => {
                     const currentCount = manager.categoryCounts[cat.name] || 0;
                     const minRequired = cat.minPerTeam || 0;
                     const maxAllowed = cat.maxPerTeam || 0;
-                    
+
                     // Color coding based on minimum requirements
                     let color = 'var(--text-primary)'; // default
                     if (currentCount < minRequired) {
@@ -2070,10 +2088,10 @@ Total Budget Used: €${Object.values(auction.managers).reduce((sum, m) => sum +
                     } else if (currentCount >= minRequired && currentCount <= maxAllowed) {
                         color = 'var(--accent-green)'; // green if within range
                     }
-                    
+
                     statsHtml += ` | <span style="color: ${color};">${cat.name}: ${currentCount}/${maxAllowed} (min: ${minRequired})</span>`;
                 });
-                
+
                 statsEl.innerHTML = statsHtml;
             }
 
