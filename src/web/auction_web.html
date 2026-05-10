@@ -891,6 +891,16 @@
                         <label for="num-categories">Number of Categories:</label>
                         <input type="number" id="num-categories" value="2" min="1" max="5" />
                     </div>
+                    <div class="config-item">
+                        <label for="player-order">Player Order During Auction:</label>
+                        <select id="player-order">
+                            <option value="random">Random Order</option>
+                            <option value="category">By Category (First Category First)</option>
+                            <option value="category-asc">By Category Name (A-Z)</option>
+                            <option value="price-asc">By Base Price (Low to High)</option>
+                            <option value="price-desc">By Base Price (High to Low)</option>
+                        </select>
+                    </div>
                 </div>
                 <div id="categories-setup" style="margin-top: 20px;">
                     <!-- Categories will be generated here -->
@@ -968,7 +978,8 @@
         maxPlayers: 7,
         teams: [],
         categories: [],
-        players: []
+        players: [],
+        playerOrder: 'random' // Controls the order of players during auction
     };
 
     // Global auction state
@@ -1218,6 +1229,7 @@
         auctionConfig.totalBudget = budget;
         auctionConfig.bidIncrement = increment;
         auctionConfig.maxPlayers = maxPlayers;
+        auctionConfig.playerOrder = document.getElementById('player-order').value;
 
         // Initialize auction
         initializeAuction();
@@ -1225,6 +1237,53 @@
         // Switch to auction phase
         document.getElementById('setup-phase').classList.add('hidden');
         document.getElementById('auction-phase').classList.remove('hidden');
+    }
+
+    function sortPlayersByOrder(players, orderType) {
+        const playersCopy = [...players];
+        
+        switch(orderType) {
+            case 'random':
+                // Shuffle using Fisher-Yates algorithm
+                for (let i = playersCopy.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [playersCopy[i], playersCopy[j]] = [playersCopy[j], playersCopy[i]];
+                }
+                return playersCopy;
+                
+            case 'category':
+                // Sort by category order (as defined in configuration)
+                return playersCopy.sort((a, b) => {
+                    const catA = auctionConfig.categories.findIndex(cat => cat.name === a.category);
+                    const catB = auctionConfig.categories.findIndex(cat => cat.name === b.category);
+                    if (catA !== catB) return catA - catB;
+                    return a.name.localeCompare(b.name);
+                });
+                
+            case 'category-asc':
+                // Sort by category name alphabetically
+                return playersCopy.sort((a, b) => {
+                    if (a.category !== b.category) return a.category.localeCompare(b.category);
+                    return a.name.localeCompare(b.name);
+                });
+                
+            case 'price-asc':
+                // Sort by base price ascending (low to high)
+                return playersCopy.sort((a, b) => {
+                    if (a.price !== b.price) return a.price - b.price;
+                    return a.name.localeCompare(b.name);
+                });
+                
+            case 'price-desc':
+                // Sort by base price descending (high to low)
+                return playersCopy.sort((a, b) => {
+                    if (a.price !== b.price) return b.price - a.price;
+                    return a.name.localeCompare(b.name);
+                });
+                
+            default:
+                return playersCopy;
+        }
     }
 
     function initializeAuction() {
@@ -1245,13 +1304,8 @@
             });
         });
 
-        // Initialize player pool with shuffling for complete randomness
-        auction.playerPool = [...auctionConfig.players];
-        // Shuffle the player pool using Fisher-Yates algorithm for better randomization
-        for (let i = auction.playerPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [auction.playerPool[i], auction.playerPool[j]] = [auction.playerPool[j], auction.playerPool[i]];
-        }
+        // Initialize player pool with sorting based on selected order
+        auction.playerPool = sortPlayersByOrder(auctionConfig.players, auctionConfig.playerOrder);
 
         // Generate auction interface
         generateAuctionInterface();
@@ -1383,13 +1437,22 @@
 
             // First prioritize regular players from the main pool
             if (auction.playerPool.length > 0) {
-                // Select random player from main pool
-                const randomIndex = Math.floor(Math.random() * auction.playerPool.length);
-                currentPlayer = auction.playerPool.splice(randomIndex, 1)[0];
+                // If player order is random, select randomly. Otherwise, take from the front (already sorted)
+                if (auctionConfig.playerOrder === 'random') {
+                    const randomIndex = Math.floor(Math.random() * auction.playerPool.length);
+                    currentPlayer = auction.playerPool.splice(randomIndex, 1)[0];
+                } else {
+                    // Take first player from the sorted pool (respects the order chosen during setup)
+                    currentPlayer = auction.playerPool.shift();
+                }
             } else if (auction.unsoldPlayers.length > 0) {
-                // Only after all regular players are done, re-auction unsold players randomly
-                const randomIndex = Math.floor(Math.random() * auction.unsoldPlayers.length);
-                currentPlayer = auction.unsoldPlayers.splice(randomIndex, 1)[0];
+                // Only after all regular players are done, re-auction unsold players
+                if (auctionConfig.playerOrder === 'random') {
+                    const randomIndex = Math.floor(Math.random() * auction.unsoldPlayers.length);
+                    currentPlayer = auction.unsoldPlayers.splice(randomIndex, 1)[0];
+                } else {
+                    currentPlayer = auction.unsoldPlayers.shift();
+                }
             } else {
                 alert('🎉 All players have been auctioned! Auction complete!');
                 return;
